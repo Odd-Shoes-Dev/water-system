@@ -104,3 +104,24 @@
 .leaflet-container {
   font-family: var(--font-body);
 }
+
+/* Moving segment of the page-navigation progress bar. */
+@keyframes route-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+.route-progress-bar {
+  animation: route-progress 1.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-progress-bar {
+    animation: none;
+    width: 100%;
+  }
+}
