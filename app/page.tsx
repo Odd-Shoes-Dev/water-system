@@ -1,69 +1,53 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Link from 'next/link'
+import { StatCard } from '@/components/stat-card'
+import { getDataStore } from '@/lib/data'
+import { getImpactSummary } from '@/lib/services/impact'
 
-export default function Home() {
+export const dynamic = 'force-dynamic'
+
+const number = (value: number) => value.toLocaleString('en-US')
+
+export default async function HomePage() {
+  const impact = await getImpactSummary(getDataStore())
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="space-y-10">
+      <section className="space-y-3">
+        <p className="text-sm uppercase tracking-[0.2em] text-accent">Rain &amp; Renew impact</p>
+        <h1 className="font-heading text-5xl leading-tight">
+          Know every drop, <em>before</em> it runs out.
+        </h1>
+        <p className="max-w-2xl text-muted-foreground">
+          Live tank levels, greywater reuse, river reports and community activity, all calculated from the data
+          our sensors and youth send in.
+        </p>
+      </section>
+
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard label="💧 Rainwater harvested" value={number(impact.rainwaterHarvestedL)} unit="L" />
+        <StatCard label="♻️ Greywater recycled" value={number(impact.greywaterRecycledL)} unit="L" />
+        <StatCard label="🚰 Water reused" value={number(impact.waterReusedL)} unit="L" />
+        <StatCard label="🌱 Trees / gardens supported" value={number(impact.treesGardensSupported)} />
+        <StatCard label="🌊 Pollution reports" value={number(impact.pollutionReports)} />
+        <StatCard label="🧹 Clean-ups conducted" value={number(impact.cleanUpsConducted)} />
+        <StatCard label="👥 Youth engaged" value={number(impact.youthEngaged)} />
+        <StatCard label="🏠 Households reached" value={number(impact.householdsReached)} />
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-3">
+        <Link href="/streams" className="rounded-lg border border-border bg-card p-5 transition-colors hover:border-accent">
+          <h2 className="font-heading text-2xl">Data streams</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Rainwater, greywater, river and community data.</p>
+        </Link>
+        <Link href="/reports" className="rounded-lg border border-border bg-card p-5 transition-colors hover:border-accent">
+          <h2 className="font-heading text-2xl">Reports &amp; map</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Youth report issues along the river and see them on the map.</p>
+        </Link>
+        <Link href="/stakeholders" className="rounded-lg border border-border bg-card p-5 transition-colors hover:border-accent">
+          <h2 className="font-heading text-2xl">Stakeholders</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Influence and interest matrix, with locations.</p>
+        </Link>
+      </section>
     </div>
-  );
+  )
 }
