@@ -153,7 +153,7 @@ export function createNeonStore(databaseUrl: string): DataStore {
 
     async listRiverReports(): Promise<RiverReport[]> {
       const rows = await sql`
-        select id, category, description, latitude, longitude, photo_url, reporter_name, status, created_at
+        select id, category, description, location_description, latitude, longitude, photo_url, reporter_name, status, created_at
         from river_reports
         order by created_at desc`
       return rows.map(mapReport)
@@ -161,10 +161,10 @@ export function createNeonStore(databaseUrl: string): DataStore {
 
     async createRiverReport(report: NewRiverReport): Promise<RiverReport> {
       const rows = await sql`
-        insert into river_reports (category, description, latitude, longitude, photo_url, reporter_name)
-        values (${report.category}, ${report.description}, ${report.latitude}, ${report.longitude},
-                ${report.photoUrl}, ${report.reporterName})
-        returning id, category, description, latitude, longitude, photo_url, reporter_name, status, created_at`
+        insert into river_reports (category, description, location_description, latitude, longitude, photo_url, reporter_name)
+        values (${report.category}, ${report.description}, ${report.locationDescription}, ${report.latitude},
+                ${report.longitude}, ${report.photoUrl}, ${report.reporterName})
+        returning id, category, description, location_description, latitude, longitude, photo_url, reporter_name, status, created_at`
       return mapReport(rows[0])
     },
 
@@ -228,6 +228,7 @@ function mapReport(r: Record<string, any>): RiverReport {
     id: Number(r.id),
     category: r.category as ReportCategory,
     description: r.description,
+    locationDescription: r.location_description ?? '',
     latitude: Number(r.latitude),
     longitude: Number(r.longitude),
     photoUrl: r.photo_url ?? null,

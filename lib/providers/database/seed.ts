@@ -60,6 +60,7 @@ export function buildSeed(): SeedData {
   const reportDate = new Date('2026-09-01T09:00:00Z')
   const reports: RiverReport[] = sampleReports.map((report, index) => ({
     ...report,
+    locationDescription: 'Sample location, alongside the river',
     id: index + 1,
     createdAt: new Date(reportDate.getTime() + index * 86_400_000),
   }))

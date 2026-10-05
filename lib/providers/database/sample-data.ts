@@ -39,7 +39,7 @@ export const sampleStakeholders: Omit<Stakeholder, 'id'>[] = [
   { name: 'Development funder', organisationType: 'funder', role: 'Funds pilot phase', influence: 5, interest: 3, latitude: null, longitude: null },
 ]
 
-export const sampleReports: Omit<RiverReport, 'id' | 'createdAt'>[] = [
+export const sampleReports: Omit<RiverReport, 'id' | 'createdAt' | 'locationDescription'>[] = [
   { category: 'illegal_dumping', description: 'Household waste dumped on the bank near the bridge.', latitude: -0.6081, longitude: 30.6502, photoUrl: null, reporterName: 'Sample reporter', status: 'open' },
   { category: 'pollution_hotspot', description: 'Discoloured water coming from an outflow pipe.', latitude: -0.6115, longitude: 30.6538, photoUrl: null, reporterName: 'Sample reporter', status: 'verified' },
   { category: 'blocked_drainage', description: 'Drain blocked with plastic, water pooling on the road.', latitude: -0.6049, longitude: 30.6571, photoUrl: null, reporterName: null, status: 'open' },

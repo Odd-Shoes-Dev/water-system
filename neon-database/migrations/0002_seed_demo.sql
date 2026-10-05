@@ -6552,14 +6552,14 @@ values
   ('gw-mbarara-house', '2026-10-04T23:00:00.000Z', 0.59, 0.56, 0.39, 34.9)
 on conflict do nothing;
 
-insert into river_reports (category, description, latitude, longitude, photo_url, reporter_name, status, created_at)
+insert into river_reports (category, description, location_description, latitude, longitude, photo_url, reporter_name, status, created_at)
 values
-  ('illegal_dumping', 'Household waste dumped on the bank near the bridge.', -0.6081, 30.6502, null, 'Sample reporter', 'open', '2026-09-01T09:00:00.000Z'),
-  ('pollution_hotspot', 'Discoloured water coming from an outflow pipe.', -0.6115, 30.6538, null, 'Sample reporter', 'verified', '2026-09-02T09:00:00.000Z'),
-  ('blocked_drainage', 'Drain blocked with plastic, water pooling on the road.', -0.6049, 30.6571, null, null, 'open', '2026-09-03T09:00:00.000Z'),
-  ('riverbank_degradation', 'Bank collapsing after heavy rain.', -0.6138, 30.6467, null, 'Sample reporter', 'open', '2026-09-04T09:00:00.000Z'),
-  ('clean_up', 'Youth group cleared the riverbank.', -0.6093, 30.6525, null, 'Sample reporter', 'resolved', '2026-09-05T09:00:00.000Z'),
-  ('restoration', 'Trees planted along the bank.', -0.6127, 30.6489, null, null, 'resolved', '2026-09-06T09:00:00.000Z')
+  ('illegal_dumping', 'Household waste dumped on the bank near the bridge.', 'Sample location, alongside the river', -0.6081, 30.6502, null, 'Sample reporter', 'open', '2026-09-01T09:00:00.000Z'),
+  ('pollution_hotspot', 'Discoloured water coming from an outflow pipe.', 'Sample location, alongside the river', -0.6115, 30.6538, null, 'Sample reporter', 'verified', '2026-09-02T09:00:00.000Z'),
+  ('blocked_drainage', 'Drain blocked with plastic, water pooling on the road.', 'Sample location, alongside the river', -0.6049, 30.6571, null, null, 'open', '2026-09-03T09:00:00.000Z'),
+  ('riverbank_degradation', 'Bank collapsing after heavy rain.', 'Sample location, alongside the river', -0.6138, 30.6467, null, 'Sample reporter', 'open', '2026-09-04T09:00:00.000Z'),
+  ('clean_up', 'Youth group cleared the riverbank.', 'Sample location, alongside the river', -0.6093, 30.6525, null, 'Sample reporter', 'resolved', '2026-09-05T09:00:00.000Z'),
+  ('restoration', 'Trees planted along the bank.', 'Sample location, alongside the river', -0.6127, 30.6489, null, null, 'resolved', '2026-09-06T09:00:00.000Z')
 on conflict do nothing;
 
 insert into community_activities (kind, title, occurred_on, youth_count, households_reached, facilities_count, trees_planted, participants)

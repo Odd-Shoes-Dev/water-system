@@ -66,10 +66,10 @@ function render(seed: SeedData): string {
     ),
     insertMany(
       'river_reports',
-      'category, description, latitude, longitude, photo_url, reporter_name, status, created_at',
+      'category, description, location_description, latitude, longitude, photo_url, reporter_name, status, created_at',
       seed.reports,
       (r) =>
-        `${q(r.category)}, ${q(r.description)}, ${n(r.latitude)}, ${n(r.longitude)}, ${q(r.photoUrl)}, ${q(r.reporterName)}, ${q(r.status)}, ${ts(r.createdAt)}`,
+        `${q(r.category)}, ${q(r.description)}, ${q(r.locationDescription)}, ${n(r.latitude)}, ${n(r.longitude)}, ${q(r.photoUrl)}, ${q(r.reporterName)}, ${q(r.status)}, ${ts(r.createdAt)}`,
     ),
     insertMany(
       'community_activities',

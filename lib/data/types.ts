@@ -60,6 +60,7 @@ export type RiverReport = {
   id: number
   category: ReportCategory
   description: string
+  locationDescription: string
   latitude: number
   longitude: number
   photoUrl: string | null
@@ -71,6 +72,7 @@ export type RiverReport = {
 export type NewRiverReport = {
   category: ReportCategory
   description: string
+  locationDescription: string
   latitude: number
   longitude: number
   photoUrl: string | null

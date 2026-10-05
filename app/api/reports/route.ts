@@ -19,6 +19,7 @@ export async function POST(request: Request) {
 
   const category = body.category
   const description = typeof body.description === 'string' ? body.description.trim() : ''
+  const locationDescription = typeof body.locationDescription === 'string' ? body.locationDescription.trim() : ''
   const latitude = Number(body.latitude)
   const longitude = Number(body.longitude)
   const reporterName = typeof body.reporterName === 'string' && body.reporterName.trim()
@@ -32,6 +33,12 @@ export async function POST(request: Request) {
   if (description.length > 500) {
     return NextResponse.json({ error: 'Description must be 500 characters or fewer' }, { status: 400 })
   }
+  if (locationDescription.length < 3) {
+    return NextResponse.json({ error: 'Describe where the issue is, for example "behind the big tree by the river"' }, { status: 400 })
+  }
+  if (locationDescription.length > 200) {
+    return NextResponse.json({ error: 'Location description must be 200 characters or fewer' }, { status: 400 })
+  }
   if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
     return NextResponse.json({ error: 'Latitude must be between -90 and 90' }, { status: 400 })
   }
@@ -42,6 +49,7 @@ export async function POST(request: Request) {
   const report = await getDataStore().createRiverReport({
     category: category as ReportCategory,
     description,
+    locationDescription,
     latitude,
     longitude,
     photoUrl,

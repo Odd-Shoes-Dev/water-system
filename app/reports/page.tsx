@@ -22,7 +22,7 @@ export default async function ReportsPage() {
     latitude: report.latitude,
     longitude: report.longitude,
     title: REPORT_CATEGORIES[report.category],
-    subtitle: `${report.description || 'No description'} · ${report.status}`,
+    subtitle: `${report.locationDescription} · ${report.status}`,
     color: markerColors[report.category],
   }))
 
@@ -51,7 +51,8 @@ export default async function ReportsPage() {
             <li key={report.id} className="flex flex-wrap items-center justify-between gap-2 px-5 py-4">
               <div>
                 <p className="font-medium">{REPORT_CATEGORIES[report.category]}</p>
-                <p className="text-sm text-muted-foreground">{report.description || 'No description'}</p>
+                <p className="text-sm text-muted-foreground">{report.locationDescription}</p>
+                {report.description && <p className="text-sm text-muted-foreground">{report.description}</p>}
               </div>
               <span className="rounded-full bg-muted px-3 py-1 text-xs capitalize">{report.status}</span>
             </li>
