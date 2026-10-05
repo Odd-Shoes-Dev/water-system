@@ -24,9 +24,9 @@ export default async function HomePage() {
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="💧 Rainwater harvested" value={number(impact.rainwaterHarvestedL)} unit="L" />
-        <StatCard label="♻️ Greywater recycled" value={number(impact.greywaterRecycledL)} unit="L" />
-        <StatCard label="🚰 Water reused" value={number(impact.waterReusedL)} unit="L" />
+        <StatCard label="💧 Rainwater harvested" value={number(impact.rainwaterHarvestedL)} unit="litres" />
+        <StatCard label="♻️ Greywater recycled" value={number(impact.greywaterRecycledL)} unit="litres" />
+        <StatCard label="🚰 Water reused" value={number(impact.waterReusedL)} unit="litres" />
         <StatCard label="🌱 Trees / gardens supported" value={number(impact.treesGardensSupported)} />
         <StatCard label="🌊 Pollution reports" value={number(impact.pollutionReports)} />
         <StatCard label="🧹 Clean-ups conducted" value={number(impact.cleanUpsConducted)} />

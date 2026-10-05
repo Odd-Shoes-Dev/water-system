@@ -36,12 +36,12 @@ export default async function StreamsPage() {
                 <tr key={tank.id} className="border-t border-border">
                   <td className="px-4 py-3">{tank.name}</td>
                   <td className="px-4 py-3">{tank.site}</td>
-                  <td className="px-4 py-3">{number(tank.capacityLitres)} L</td>
+                  <td className="px-4 py-3">{number(tank.capacityLitres)} litres</td>
                   <td className="px-4 py-3">
                     <LevelBar percent={tank.latestLevelPercent} />
                   </td>
-                  <td className="px-4 py-3">{number(tank.harvestedLast30Days)} L</td>
-                  <td className="px-4 py-3">{number(tank.usedLast30Days)} L</td>
+                  <td className="px-4 py-3">{number(tank.harvestedLast30Days)} litres</td>
+                  <td className="px-4 py-3">{number(tank.usedLast30Days)} litres</td>
                 </tr>
               ))}
             </tbody>
@@ -51,7 +51,7 @@ export default async function StreamsPage() {
           {overview.rainfall.map((r) => (
             <div key={r.site} className="rounded-lg border border-border bg-card p-4">
               <p className="text-sm text-muted-foreground">Rainfall, last 7 days · {r.site}</p>
-              <p className="mt-1 font-heading text-3xl">{r.last7DaysMm} mm</p>
+              <p className="mt-1 font-body text-3xl font-medium tabular-nums">{r.last7DaysMm} mm</p>
             </div>
           ))}
         </div>
@@ -72,7 +72,7 @@ export default async function StreamsPage() {
               <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <div>
                   <dt className="text-muted-foreground">Reused (30 days)</dt>
-                  <dd className="font-medium">{number(unit.reusedLast30Days)} L</dd>
+                  <dd className="font-medium">{number(unit.reusedLast30Days)} litres</dd>
                 </div>
                 <div>
                   <dt className="text-muted-foreground">Filter pressure</dt>
@@ -92,7 +92,7 @@ export default async function StreamsPage() {
           {overview.reportCounts.map((item) => (
             <div key={item.category} className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3">
               <span className="text-sm">{item.label}</span>
-              <span className="font-heading text-2xl">{item.count}</span>
+              <span className="font-body text-xl font-medium tabular-nums">{item.count}</span>
             </div>
           ))}
         </div>
@@ -103,15 +103,15 @@ export default async function StreamsPage() {
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-lg border border-border bg-card p-5">
             <p className="text-sm text-muted-foreground">Youth trained</p>
-            <p className="mt-1 font-heading text-4xl">{number(overview.activityCounts.youthTrained)}</p>
+            <p className="mt-1 font-body text-3xl font-medium tabular-nums">{number(overview.activityCounts.youthTrained)}</p>
           </div>
           <div className="rounded-lg border border-border bg-card p-5">
             <p className="text-sm text-muted-foreground">Clean-ups completed</p>
-            <p className="mt-1 font-heading text-4xl">{overview.activityCounts.clean_ups}</p>
+            <p className="mt-1 font-body text-3xl font-medium tabular-nums">{overview.activityCounts.clean_ups}</p>
           </div>
           <div className="rounded-lg border border-border bg-card p-5">
             <p className="text-sm text-muted-foreground">Trees planted</p>
-            <p className="mt-1 font-heading text-4xl">{number(overview.activityCounts.trees)}</p>
+            <p className="mt-1 font-body text-3xl font-medium tabular-nums">{number(overview.activityCounts.trees)}</p>
           </div>
         </div>
       </section>
