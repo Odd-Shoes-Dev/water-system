@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { REPORT_CATEGORIES } from '@/lib/data/types'
 import type { Position } from './location-picker'
 
@@ -24,6 +24,14 @@ export function ReportForm() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const statusRef = useRef<HTMLDivElement>(null)
+
+  // The button is at the bottom of a long form, so bring the result into view.
+  useEffect(() => {
+    if (error || success) {
+      statusRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [error, success])
 
   function useMyLocation() {
     setLocationMessage(null)
@@ -153,8 +161,14 @@ export function ReportForm() {
         <input name="reporterName" className={inputClass} />
       </label>
 
-      {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-      {success && <p role="status" className="text-sm text-success">Thank you. Your report has been saved and is on the map.</p>}
+      <div ref={statusRef} aria-live="polite">
+        {error && <p role="alert" className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>}
+        {success && (
+          <p role="status" className="rounded-md bg-success/10 px-4 py-3 text-sm text-success">
+            Thank you. Your report has been saved and is on the map.
+          </p>
+        )}
+      </div>
 
       <button
         type="submit"
