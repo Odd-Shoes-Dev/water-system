@@ -47,11 +47,11 @@ export default async function StreamsPage() {
             </tbody>
           </table>
         </div>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3">
           {overview.rainfall.map((r) => (
-            <div key={r.site} className="rounded-lg border border-border bg-card p-4">
-              <p className="text-sm text-muted-foreground">Rainfall, last 7 days · {r.site}</p>
-              <p className="mt-1 font-body text-3xl font-medium tabular-nums">{r.last7DaysMm} mm</p>
+            <div key={r.site} className="rounded-lg border border-border bg-card p-3 sm:p-4">
+              <p className="text-xs text-muted-foreground sm:text-sm">Rainfall, last 7 days · {r.site}</p>
+              <p className="mt-1 font-body text-2xl font-medium tabular-nums sm:text-3xl">{r.last7DaysMm} mm</p>
             </div>
           ))}
         </div>
@@ -88,31 +88,47 @@ export default async function StreamsPage() {
 
       <section className="space-y-4">
         <h2 className="font-heading text-3xl">3. River Rwizi</h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
           {overview.reportCounts.map((item) => (
-            <div key={item.category} className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3">
-              <span className="text-sm">{item.label}</span>
-              <span className="font-body text-xl font-medium tabular-nums">{item.count}</span>
+            <div key={item.category} className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-3 sm:px-4">
+              <span className="text-xs sm:text-sm">{item.label}</span>
+              <span className="font-body text-lg font-medium tabular-nums sm:text-xl">{item.count}</span>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section id="community" className="space-y-4 scroll-mt-6">
         <h2 className="font-heading text-3xl">4. Community</h2>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-lg border border-border bg-card p-5">
-            <p className="text-sm text-muted-foreground">Youth trained</p>
-            <p className="mt-1 font-body text-3xl font-medium tabular-nums">{number(overview.activityCounts.youthTrained)}</p>
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          <div className="rounded-lg border border-border bg-card p-3 sm:p-5">
+            <p className="text-xs text-muted-foreground sm:text-sm">Youth trained</p>
+            <p className="mt-1 font-body text-2xl font-medium tabular-nums sm:text-3xl">{number(overview.activityCounts.youthTrained)}</p>
           </div>
-          <div className="rounded-lg border border-border bg-card p-5">
-            <p className="text-sm text-muted-foreground">Clean-ups completed</p>
-            <p className="mt-1 font-body text-3xl font-medium tabular-nums">{overview.activityCounts.clean_ups}</p>
+          <div className="rounded-lg border border-border bg-card p-3 sm:p-5">
+            <p className="text-xs text-muted-foreground sm:text-sm">Clean-ups completed</p>
+            <p className="mt-1 font-body text-2xl font-medium tabular-nums sm:text-3xl">{overview.activityCounts.clean_ups}</p>
           </div>
-          <div className="rounded-lg border border-border bg-card p-5">
-            <p className="text-sm text-muted-foreground">Trees planted</p>
-            <p className="mt-1 font-body text-3xl font-medium tabular-nums">{number(overview.activityCounts.trees)}</p>
+          <div className="rounded-lg border border-border bg-card p-3 sm:p-5">
+            <p className="text-xs text-muted-foreground sm:text-sm">Trees planted</p>
+            <p className="mt-1 font-body text-2xl font-medium tabular-nums sm:text-3xl">{number(overview.activityCounts.trees)}</p>
           </div>
+          <div className="rounded-lg border border-border bg-card p-3 sm:p-5">
+            <p className="text-xs text-muted-foreground sm:text-sm">Households reached</p>
+            <p className="mt-1 font-body text-2xl font-medium tabular-nums sm:text-3xl">{number(overview.activityCounts.householdsReached)}</p>
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-border bg-card p-5">
+          <p className="text-sm font-medium">Households reached, by how</p>
+          <ul className="mt-3 divide-y divide-border text-sm">
+            {overview.householdsByKind.map((item) => (
+              <li key={item.kind} className="flex items-center justify-between py-2">
+                <span className="text-muted-foreground">{item.label}</span>
+                <span className="font-body font-medium tabular-nums">{number(item.households)}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     </div>

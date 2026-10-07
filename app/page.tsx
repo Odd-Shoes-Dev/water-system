@@ -31,7 +31,11 @@ export default async function HomePage() {
         <StatCard label="🌊 Pollution reports" value={number(impact.pollutionReports)} />
         <StatCard label="🧹 Clean-ups conducted" value={number(impact.cleanUpsConducted)} />
         <StatCard label="👥 Youth engaged" value={number(impact.youthEngaged)} />
-        <StatCard label="🏠 Households reached" value={number(impact.householdsReached)} />
+        <StatCard
+          label="🏠 Households reached"
+          value={number(impact.householdsReached)}
+          href="/streams#community"
+        />
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">

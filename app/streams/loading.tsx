@@ -21,11 +21,11 @@ export default function Loading() {
             </div>
           ))}
         </div>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="rounded-lg border border-border bg-card p-4">
-              <Skeleton className="h-4 w-40" />
-              <Skeleton className="mt-2 h-8 w-24" />
+            <div key={i} className="rounded-lg border border-border bg-card p-3 sm:p-4">
+              <Skeleton className="h-4 w-28 sm:w-40" />
+              <Skeleton className="mt-2 h-7 w-20 sm:h-8 sm:w-24" />
             </div>
           ))}
         </div>
@@ -46,7 +46,7 @@ export default function Loading() {
 
       <section className="space-y-4">
         <Skeleton className="h-8 w-44" />
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />
           ))}
@@ -55,11 +55,12 @@ export default function Loading() {
 
       <section className="space-y-4">
         <Skeleton className="h-8 w-44" />
-        <div className="grid gap-4 sm:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, i) => (
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className="h-24 w-full" />
           ))}
         </div>
+        <Skeleton className="h-32 w-full" />
       </section>
     </div>
   )

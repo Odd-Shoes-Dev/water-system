@@ -1,6 +1,16 @@
 // Summaries for the Streams page: one section per data stream.
 import type { DataStore } from '@/lib/data/store'
-import { REPORT_CATEGORIES, type ReportCategory } from '@/lib/data/types'
+import { REPORT_CATEGORIES, type ActivityKind, type ReportCategory } from '@/lib/data/types'
+
+// Order and label for breaking "households reached" down by how they were
+// reached, instead of one combined total.
+const HOUSEHOLD_KIND_LABELS: Record<ActivityKind, string> = {
+  household_adoption: 'Received a tank',
+  clean_up: 'Through a clean-up',
+  training: 'Through training',
+  restoration: 'Through restoration',
+}
+const HOUSEHOLD_KIND_ORDER: ActivityKind[] = ['household_adoption', 'clean_up', 'training', 'restoration']
 
 const DAY_MS = 86_400_000
 
@@ -30,7 +40,8 @@ export type StreamsOverview = {
   greywater: GreywaterSummary[]
   rainfall: RainfallSummary[]
   reportCounts: { category: ReportCategory; label: string; count: number }[]
-  activityCounts: { youthTrained: number; clean_ups: number; trees: number }
+  activityCounts: { youthTrained: number; clean_ups: number; trees: number; householdsReached: number }
+  householdsByKind: { kind: ActivityKind; label: string; households: number }[]
 }
 
 export async function getStreamsOverview(store: DataStore): Promise<StreamsOverview> {
@@ -95,6 +106,12 @@ export async function getStreamsOverview(store: DataStore): Promise<StreamsOverv
     count: reports.filter((r) => r.category === category).length,
   }))
 
+  const householdsByKind = HOUSEHOLD_KIND_ORDER.map((kind) => ({
+    kind,
+    label: HOUSEHOLD_KIND_LABELS[kind],
+    households: activities.filter((a) => a.kind === kind).reduce((t, a) => t + a.householdsReached, 0),
+  }))
+
   return {
     tanks: tankSummaries,
     greywater: greywaterSummaries,
@@ -104,6 +121,8 @@ export async function getStreamsOverview(store: DataStore): Promise<StreamsOverv
       youthTrained: activities.filter((a) => a.kind === 'training').reduce((t, a) => t + a.youthCount, 0),
       clean_ups: activities.filter((a) => a.kind === 'clean_up').length,
       trees: activities.reduce((t, a) => t + a.treesPlanted, 0),
+      householdsReached: activities.reduce((t, a) => t + a.householdsReached, 0),
     },
+    householdsByKind,
   }
 }

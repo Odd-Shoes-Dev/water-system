@@ -11,11 +11,11 @@ export default function Loading() {
         <Skeleton className="h-4 w-full max-w-2xl" />
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="rounded-lg border border-border bg-card p-5">
-            <Skeleton className="h-4 w-36" />
-            <Skeleton className="mt-4 h-10 w-28" />
+          <div key={i} className="rounded-lg border border-border bg-card p-3 sm:p-5">
+            <Skeleton className="h-4 w-24 sm:w-36" />
+            <Skeleton className="mt-4 h-8 w-20 sm:h-10 sm:w-28" />
           </div>
         ))}
       </section>
