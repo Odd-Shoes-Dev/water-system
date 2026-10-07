@@ -23,7 +23,7 @@ export default async function HomePage() {
         </p>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard label="💧 Rainwater harvested" value={number(impact.rainwaterHarvestedL)} unit="litres" />
         <StatCard label="♻️ Greywater recycled" value={number(impact.greywaterRecycledL)} unit="litres" />
         <StatCard label="🚰 Water reused" value={number(impact.waterReusedL)} unit="litres" />
