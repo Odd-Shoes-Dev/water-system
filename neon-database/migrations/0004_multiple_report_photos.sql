@@ -1,4 +1,4 @@
--- 0005_multiple_report_photos.sql
+-- 0004_multiple_report_photos.sql
 -- Reports can now carry up to 10 photos instead of one. Run this once in
 -- Neon's SQL editor. Safe to re-run: the column add is guarded, and the
 -- migration step only runs while the old photo_url column still exists.

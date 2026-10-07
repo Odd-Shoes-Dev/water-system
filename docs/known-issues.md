@@ -18,9 +18,10 @@ urgent for the demo, but worth doing before this goes further than a pilot.
 
 ## Data freshness
 
-- **Seed data has fixed dates.** The simulated history in
-  `neon-database/migrations/0002_seed_demo.sql` (and
-  `lib/providers/database/seed.ts`) is anchored to September 2026. The
+- **Seed data has fixed dates.** The simulated history, in
+  `lib/providers/database/seed.ts` and in `neon-database/seed-demo.sql` if
+  you've generated it (see `neon-database/README.md`), is anchored to
+  September 2026. The
   "last 7 days" and "last 30 days" figures on the Streams page will drift
   toward zero as real time moves past that window. Either re-seed
   periodically with recent dates, or change the seed to generate relative

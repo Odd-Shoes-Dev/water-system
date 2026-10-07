@@ -1,4 +1,4 @@
--- 0004_add_waitlist.sql
+-- 0003_add_waitlist.sql
 -- A general interest list: name, place, phone number, and optional photo or
 -- audio as evidence of interest. Run this once in Neon's SQL editor.
 -- Safe to re-run: uses "if not exists".

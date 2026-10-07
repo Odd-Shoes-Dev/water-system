@@ -6,26 +6,35 @@ Migrations are plain SQL files. You run them yourself; the app never changes the
 
 | File | What it does |
 |---|---|
-| `migrations/0001_init.sql` | Creates all tables. Run first. |
-| `migrations/0002_seed_demo.sql` | Adds simulated demo data (30 days of tank, rainfall and greywater readings, sample reports, activities, stakeholders and the demo device). Run second. Generated, do not edit by hand. |
+| `migrations/0001_init.sql` | Creates all tables. |
+| `migrations/0002_add_location_description.sql` | Adds a written description of where a river report is. |
+| `migrations/0003_add_waitlist.sql` | Adds the waitlist_entries table. |
+| `migrations/0004_multiple_report_photos.sql` | Lets a report carry up to 10 photos instead of one. |
 
-## Running them
+Run these in order, `0001` through `0004`. Each one only depends on the ones
+before it, so running them in file order is always safe.
 
-1. Open your project in the [Neon console](https://console.neon.tech) and go to **SQL Editor**.
-2. Paste the contents of `0001_init.sql` and run it.
-3. Paste the contents of `0002_seed_demo.sql` and run it.
+There's no seed-data migration here, by design: seed data needs the *final*
+schema, so it can never be safely numbered into the middle of this sequence,
+it would depend on files that haven't run yet. See "Adding demo data" below
+if you want some.
 
-Both files are safe to re-run; they skip anything that already exists.
+All four files are safe to re-run; they skip anything that already exists.
 
-## Regenerating the seed
+## Adding demo data
 
-If the sample data or the simulator changes, regenerate the seed file:
+The database starts empty. If you want simulated demo data (30 days of tank,
+rainfall and greywater readings, sample reports, activities, stakeholders,
+waitlist entries and the demo device), generate it after running all four
+migrations above:
 
 ```bash
 npm run db:generate-seed
 ```
 
-Then run the new `0002_seed_demo.sql` in the SQL Editor. Remove the old demo rows first if you need an exact match.
+This writes `neon-database/seed-demo.sql` (not in `migrations/`, since it
+isn't a migration). Paste its contents into the SQL Editor and run it last.
+Regenerate and re-run it any time the sample data or simulator changes.
 
 ## Connecting the app
 
