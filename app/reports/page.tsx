@@ -48,11 +48,21 @@ export default async function ReportsPage() {
         <h2 className="font-heading text-3xl">Latest reports</h2>
         <ul className="divide-y divide-border rounded-lg border border-border bg-card">
           {reports.map((report) => (
-            <li key={report.id} className="flex flex-wrap items-center justify-between gap-2 px-5 py-4">
-              <div>
-                <p className="font-medium">{REPORT_CATEGORIES[report.category]}</p>
-                <p className="text-sm text-muted-foreground">{report.locationDescription}</p>
-                {report.description && <p className="text-sm text-muted-foreground">{report.description}</p>}
+            <li key={report.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+              <div className="flex items-center gap-3">
+                {report.photoUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element -- remote ImageKit URL, not a local asset
+                  <img
+                    src={report.photoUrl}
+                    alt={`Photo submitted with the ${REPORT_CATEGORIES[report.category].toLowerCase()} report`}
+                    className="h-14 w-14 shrink-0 rounded-md object-cover"
+                  />
+                )}
+                <div>
+                  <p className="font-medium">{REPORT_CATEGORIES[report.category]}</p>
+                  <p className="text-sm text-muted-foreground">{report.locationDescription}</p>
+                  {report.description && <p className="text-sm text-muted-foreground">{report.description}</p>}
+                </div>
               </div>
               <span className="rounded-full bg-muted px-3 py-1 text-xs capitalize">{report.status}</span>
             </li>

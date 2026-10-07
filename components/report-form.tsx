@@ -24,7 +24,12 @@ export function ReportForm() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photoError, setPhotoError] = useState<string | null>(null)
+  const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const statusRef = useRef<HTMLDivElement>(null)
+  const photoInputRef = useRef<HTMLInputElement>(null)
 
   // The button is at the bottom of a long form, so bring the result into view.
   useEffect(() => {
@@ -32,6 +37,26 @@ export function ReportForm() {
       statusRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }, [error, success])
+
+  function handlePhotoChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null
+    setPhotoError(null)
+    setPhotoPreview((previous) => {
+      if (previous) URL.revokeObjectURL(previous)
+      return file ? URL.createObjectURL(file) : null
+    })
+    setPhotoFile(file)
+  }
+
+  function clearPhoto() {
+    setPhotoPreview((previous) => {
+      if (previous) URL.revokeObjectURL(previous)
+      return null
+    })
+    setPhotoFile(null)
+    setPhotoError(null)
+    if (photoInputRef.current) photoInputRef.current.value = ''
+  }
 
   function useMyLocation() {
     setLocationMessage(null)
@@ -71,6 +96,31 @@ export function ReportForm() {
     setSubmitting(true)
 
     const data = new FormData(form)
+
+    let photoUrl: string | null = null
+    if (photoFile) {
+      setUploadingPhoto(true)
+      const photoData = new FormData()
+      photoData.append('file', photoFile)
+      try {
+        const uploadResponse = await fetch('/api/uploads', { method: 'POST', body: photoData })
+        const uploadBody = await uploadResponse.json().catch(() => null)
+        if (!uploadResponse.ok) {
+          setPhotoError(uploadBody?.error ?? 'Could not upload the photo')
+          setSubmitting(false)
+          setUploadingPhoto(false)
+          return
+        }
+        photoUrl = uploadBody.url
+      } catch {
+        setPhotoError('Could not upload the photo. Check your connection and try again.')
+        setSubmitting(false)
+        setUploadingPhoto(false)
+        return
+      }
+      setUploadingPhoto(false)
+    }
+
     const payload = {
       category: data.get('category'),
       description: data.get('description'),
@@ -78,6 +128,7 @@ export function ReportForm() {
       latitude: position.latitude,
       longitude: position.longitude,
       reporterName: data.get('reporterName'),
+      photoUrl,
     }
 
     try {
@@ -94,6 +145,7 @@ export function ReportForm() {
       }
 
       form.reset()
+      clearPhoto()
       setSuccess(true)
       router.refresh()
     } catch {
@@ -156,6 +208,33 @@ export function ReportForm() {
         <textarea name="description" rows={3} maxLength={500} className={inputClass} placeholder="What is happening?" />
       </label>
 
+      <div className="space-y-2 text-sm">
+        <span className="font-medium">Photo (optional)</span>
+        {photoPreview ? (
+          <div className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element -- preview of a locally chosen file, not a remote asset */}
+            <img src={photoPreview} alt="Selected photo preview" className="h-20 w-20 rounded-md object-cover" />
+            <button
+              type="button"
+              onClick={clearPhoto}
+              className="rounded-full border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:border-destructive hover:text-destructive"
+            >
+              Remove photo
+            </button>
+          </div>
+        ) : (
+          <input
+            ref={photoInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            capture="environment"
+            onChange={handlePhotoChange}
+            className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-secondary file:px-4 file:py-2 file:text-sm file:font-medium file:text-secondary-foreground"
+          />
+        )}
+        {photoError && <p role="alert" className="text-sm text-destructive">{photoError}</p>}
+      </div>
+
       <label className="block space-y-1 text-sm">
         <span className="font-medium">Your name (optional)</span>
         <input name="reporterName" className={inputClass} />
@@ -175,7 +254,7 @@ export function ReportForm() {
         disabled={submitting}
         className="w-full rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-60"
       >
-        {submitting ? 'Saving…' : 'Submit report'}
+        {uploadingPhoto ? 'Uploading photo…' : submitting ? 'Saving…' : 'Submit report'}
       </button>
     </form>
   )
