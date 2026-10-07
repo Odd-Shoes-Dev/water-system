@@ -100,13 +100,6 @@ export function WaitlistForm({ onJoined }: { onJoined?: () => void }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-border bg-card p-5">
-      <div>
-        <h2 className="font-heading text-2xl">Want to be part of the programme?</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Leave your details and we&apos;ll reach out. Your name and phone number are kept private.
-        </p>
-      </div>
-
       <label className="block space-y-1 text-sm">
         <span className="font-medium">Name</span>
         <input name="name" required minLength={2} maxLength={100} className={inputClass} />

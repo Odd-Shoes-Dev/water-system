@@ -7,6 +7,7 @@ const links = [
   { href: '/', label: 'Home' },
   { href: '/streams', label: 'Data streams' },
   { href: '/reports', label: 'Reports & map' },
+  { href: '/waitlist', label: 'Waitlist' },
   { href: '/stakeholders', label: 'Stakeholders' },
 ]
 

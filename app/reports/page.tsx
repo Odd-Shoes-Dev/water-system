@@ -1,7 +1,7 @@
+import Link from 'next/link'
 import { MapView } from '@/components/map-view'
 import { ReportForm } from '@/components/report-form'
 import { ReportsList } from '@/components/reports-list'
-import { WaitlistSection } from '@/components/waitlist-section'
 import { getDataStore } from '@/lib/data'
 import { REPORT_CATEGORIES } from '@/lib/data/types'
 
@@ -53,7 +53,16 @@ export default async function ReportsPage() {
         <ReportsList reports={reports.map((report) => ({ ...report, createdAt: report.createdAt.toISOString() }))} />
       </section>
 
-      <WaitlistSection initialCount={waitlistCount} />
+      <Link
+        href="/waitlist"
+        className="block rounded-lg border border-border bg-card p-5 transition-colors hover:border-accent"
+      >
+        <h2 className="font-heading text-2xl">Want to join the programme?</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {waitlistCount.toLocaleString('en-US')} {waitlistCount === 1 ? 'person has' : 'people have'} joined
+          so far. Leave your details and we&apos;ll reach out.
+        </p>
+      </Link>
     </div>
   )
 }
