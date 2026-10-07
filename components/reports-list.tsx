@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { ImageLightbox } from './image-lightbox'
 import { MapView } from './map-view'
 import { Modal } from './modal'
 import { REPORT_CATEGORIES, type ReportCategory } from '@/lib/data/types'
@@ -28,6 +29,12 @@ const statusStyles: Record<string, string> = {
 
 export function ReportsList({ reports }: { reports: ReportListItem[] }) {
   const [selected, setSelected] = useState<ReportListItem | null>(null)
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+
+  function openReport(report: ReportListItem) {
+    setSelected(report)
+    setLightboxIndex(null)
+  }
 
   return (
     <>
@@ -36,7 +43,7 @@ export function ReportsList({ reports }: { reports: ReportListItem[] }) {
           <li key={report.id}>
             <button
               type="button"
-              onClick={() => setSelected(report)}
+              onClick={() => openReport(report)}
               className="flex w-full flex-wrap items-center justify-between gap-3 px-5 py-4 text-left transition-colors hover:bg-muted/60"
             >
               <div className="flex items-center gap-3">
@@ -73,7 +80,11 @@ export function ReportsList({ reports }: { reports: ReportListItem[] }) {
       </ul>
 
       {selected && (
-        <Modal onClose={() => setSelected(null)} titleId="report-modal-title">
+        <Modal
+          onClose={() => setSelected(null)}
+          titleId="report-modal-title"
+          disableEscape={lightboxIndex !== null}
+        >
           <div className="flex items-start justify-between gap-4">
             <h3 id="report-modal-title" className="font-heading text-2xl">
               {REPORT_CATEGORIES[selected.category]}
@@ -95,13 +106,20 @@ export function ReportsList({ reports }: { reports: ReportListItem[] }) {
           {selected.photoUrls.length > 0 && (
             <div className="mt-4 grid grid-cols-3 gap-2">
               {selected.photoUrls.map((url, index) => (
-                // eslint-disable-next-line @next/next/no-img-element -- remote ImageKit URL, not a local asset
-                <img
+                <button
                   key={url}
-                  src={url}
-                  alt={`Photo ${index + 1} submitted with this report`}
-                  className="aspect-square w-full rounded-md object-cover"
-                />
+                  type="button"
+                  onClick={() => setLightboxIndex(index)}
+                  aria-label={`View photo ${index + 1} of ${selected.photoUrls.length} full size`}
+                  className="aspect-square overflow-hidden rounded-md transition-opacity hover:opacity-80"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element -- remote ImageKit URL, not a local asset */}
+                  <img
+                    src={url}
+                    alt={`Photo ${index + 1} submitted with this report`}
+                    className="h-full w-full object-cover"
+                  />
+                </button>
               ))}
             </div>
           )}
@@ -151,6 +169,15 @@ export function ReportsList({ reports }: { reports: ReportListItem[] }) {
             />
           </div>
         </Modal>
+      )}
+
+      {selected && lightboxIndex !== null && (
+        <ImageLightbox
+          photos={selected.photoUrls}
+          index={lightboxIndex}
+          onIndexChange={setLightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
       )}
     </>
   )

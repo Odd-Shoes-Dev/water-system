@@ -13,10 +13,14 @@ export function Modal({
   onClose,
   titleId,
   children,
+  disableEscape = false,
 }: {
   onClose: () => void
   titleId: string
   children: React.ReactNode
+  // Set while something else (for example a photo viewer) is layered on top,
+  // so Escape closes that instead of this modal underneath it.
+  disableEscape?: boolean
 }) {
   const panelRef = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(false)
@@ -27,6 +31,7 @@ export function Modal({
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
+      if (disableEscape) return
       if (event.key === 'Escape') onClose()
     }
     document.addEventListener('keydown', handleKeyDown)
@@ -47,7 +52,7 @@ export function Modal({
       document.body.style.overflow = previousOverflow
       document.body.style.paddingRight = previousPaddingRight
     }
-  }, [onClose])
+  }, [onClose, disableEscape])
 
   if (!mounted) return null
 
