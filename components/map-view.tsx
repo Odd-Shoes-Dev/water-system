@@ -9,9 +9,17 @@ const LeafletMap = dynamic(() => import('./leaflet-map'), {
   loading: () => <div className="flex h-full items-center justify-center text-muted-foreground">Loading map…</div>,
 })
 
-export function MapView(props: { markers: MapMarker[]; center?: [number, number]; zoom?: number }) {
+export function MapView({
+  heightClassName = 'h-[420px]',
+  ...props
+}: {
+  markers: MapMarker[]
+  center?: [number, number]
+  zoom?: number
+  heightClassName?: string
+}) {
   return (
-    <div className="h-[420px] w-full overflow-hidden rounded-lg border border-border bg-card">
+    <div className={`${heightClassName} w-full overflow-hidden rounded-lg border border-border bg-card`}>
       <LeafletMap {...props} />
     </div>
   )

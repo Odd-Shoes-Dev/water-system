@@ -1,5 +1,6 @@
 import { MapView } from '@/components/map-view'
 import { ReportForm } from '@/components/report-form'
+import { ReportsList } from '@/components/reports-list'
 import { WaitlistSection } from '@/components/waitlist-section'
 import { getDataStore } from '@/lib/data'
 import { REPORT_CATEGORIES } from '@/lib/data/types'
@@ -48,38 +49,8 @@ export default async function ReportsPage() {
 
       <section className="space-y-4">
         <h2 className="font-heading text-3xl">Latest reports</h2>
-        <ul className="divide-y divide-border rounded-lg border border-border bg-card">
-          {reports.map((report) => (
-            <li key={report.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-              <div className="flex items-center gap-3">
-                {report.photoUrls.length > 0 && (
-                  <div className="flex shrink-0 -space-x-3">
-                    {report.photoUrls.slice(0, 3).map((url, index) => (
-                      // eslint-disable-next-line @next/next/no-img-element -- remote ImageKit URL, not a local asset
-                      <img
-                        key={url}
-                        src={url}
-                        alt={`Photo ${index + 1} submitted with the ${REPORT_CATEGORIES[report.category].toLowerCase()} report`}
-                        className="h-14 w-14 rounded-md border-2 border-card object-cover"
-                      />
-                    ))}
-                    {report.photoUrls.length > 3 && (
-                      <span className="flex h-14 w-14 items-center justify-center rounded-md border-2 border-card bg-muted text-xs font-medium text-muted-foreground">
-                        +{report.photoUrls.length - 3}
-                      </span>
-                    )}
-                  </div>
-                )}
-                <div>
-                  <p className="font-medium">{REPORT_CATEGORIES[report.category]}</p>
-                  <p className="text-sm text-muted-foreground">{report.locationDescription}</p>
-                  {report.description && <p className="text-sm text-muted-foreground">{report.description}</p>}
-                </div>
-              </div>
-              <span className="rounded-full bg-muted px-3 py-1 text-xs capitalize">{report.status}</span>
-            </li>
-          ))}
-        </ul>
+        <p className="text-sm text-muted-foreground">Click a report to see its full details.</p>
+        <ReportsList reports={reports.map((report) => ({ ...report, createdAt: report.createdAt.toISOString() }))} />
       </section>
 
       <WaitlistSection initialCount={waitlistCount} />
