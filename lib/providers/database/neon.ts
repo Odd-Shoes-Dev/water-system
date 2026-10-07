@@ -224,8 +224,8 @@ export function createNeonStore(databaseUrl: string): DataStore {
 
     async createWaitlistEntry(entry: NewWaitlistEntry): Promise<void> {
       await sql`
-        insert into waitlist_entries (name, place, phone, photo_url, audio_url)
-        values (${entry.name}, ${entry.place}, ${entry.phone}, ${entry.photoUrl}, ${entry.audioUrl})`
+        insert into waitlist_entries (name, place, phone, email, photo_url, audio_url)
+        values (${entry.name}, ${entry.place}, ${entry.phone}, ${entry.email}, ${entry.photoUrl}, ${entry.audioUrl})`
     },
 
     async countWaitlistEntries(): Promise<number> {

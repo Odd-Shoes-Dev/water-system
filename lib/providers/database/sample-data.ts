@@ -43,11 +43,11 @@ export const sampleStakeholders: Omit<Stakeholder, 'id'>[] = [
 // Placeholder phone numbers and names for the demo; real entries are never listed
 // back out to the app, only counted, since this is personal data.
 export const sampleWaitlist: Omit<WaitlistEntry, 'id' | 'createdAt'>[] = [
-  { name: 'Sample applicant 1', place: 'Kampala', phone: '+256700000001', photoUrl: null, audioUrl: null },
-  { name: 'Sample applicant 2', place: 'Mbarara', phone: '+256700000002', photoUrl: null, audioUrl: null },
-  { name: 'Sample applicant 3', place: 'Gulu', phone: '+256700000003', photoUrl: null, audioUrl: null },
-  { name: 'Sample applicant 4', place: 'Mbarara', phone: '+256700000004', photoUrl: null, audioUrl: null },
-  { name: 'Sample applicant 5', place: 'Kampala', phone: '+256700000005', photoUrl: null, audioUrl: null },
+  { name: 'Sample applicant 1', place: 'Kampala', phone: '+256700000001', email: 'applicant1@example.com', photoUrl: null, audioUrl: null },
+  { name: 'Sample applicant 2', place: 'Mbarara', phone: '+256700000002', email: null, photoUrl: null, audioUrl: null },
+  { name: 'Sample applicant 3', place: 'Gulu', phone: '+256700000003', email: 'applicant3@example.com', photoUrl: null, audioUrl: null },
+  { name: 'Sample applicant 4', place: 'Mbarara', phone: '+256700000004', email: null, photoUrl: null, audioUrl: null },
+  { name: 'Sample applicant 5', place: 'Kampala', phone: '+256700000005', email: 'applicant5@example.com', photoUrl: null, audioUrl: null },
 ]
 
 export const sampleReports: Omit<RiverReport, 'id' | 'createdAt' | 'locationDescription'>[] = [

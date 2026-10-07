@@ -121,6 +121,7 @@ export type WaitlistEntry = {
   name: string
   place: string
   phone: string
+  email: string | null
   photoUrl: string | null
   audioUrl: string | null
   createdAt: Date
@@ -130,6 +131,7 @@ export type NewWaitlistEntry = {
   name: string
   place: string
   phone: string
+  email: string | null
   photoUrl: string | null
   audioUrl: string | null
 }

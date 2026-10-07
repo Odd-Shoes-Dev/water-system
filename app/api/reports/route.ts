@@ -50,14 +50,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: `You can attach up to ${MAX_REPORT_PHOTOS} photos` }, { status: 400 })
   }
 
-  const report = await getDataStore().createRiverReport({
-    category: category as ReportCategory,
-    description,
-    locationDescription,
-    latitude,
-    longitude,
-    photoUrls,
-    reporterName,
-  })
-  return NextResponse.json({ report }, { status: 201 })
+  try {
+    const report = await getDataStore().createRiverReport({
+      category: category as ReportCategory,
+      description,
+      locationDescription,
+      latitude,
+      longitude,
+      photoUrls,
+      reporterName,
+    })
+    return NextResponse.json({ report }, { status: 201 })
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json({ error: 'Could not save that right now. Please try again.' }, { status: 502 })
+  }
 }

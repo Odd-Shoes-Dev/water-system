@@ -73,6 +73,7 @@ export function WaitlistForm({ onJoined }: { onJoined?: () => void }) {
           name: data.get('name'),
           place: data.get('place'),
           phone: data.get('phone'),
+          email: data.get('email'),
           photoUrl,
           audioUrl,
         }),
@@ -100,19 +101,34 @@ export function WaitlistForm({ onJoined }: { onJoined?: () => void }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-border bg-card p-5">
+      <p className="text-xs text-muted-foreground">
+        <span className="text-destructive">*</span> Required
+      </p>
+
       <label className="block space-y-1 text-sm">
-        <span className="font-medium">Name</span>
+        <span className="font-medium">
+          Name <span className="text-destructive">*</span>
+        </span>
         <input name="name" required minLength={2} maxLength={100} className={inputClass} />
       </label>
 
       <label className="block space-y-1 text-sm">
-        <span className="font-medium">Place</span>
+        <span className="font-medium">
+          Place <span className="text-destructive">*</span>
+        </span>
         <input name="place" required minLength={2} maxLength={100} className={inputClass} placeholder="Village, town or area" />
       </label>
 
       <label className="block space-y-1 text-sm">
-        <span className="font-medium">Phone number</span>
+        <span className="font-medium">
+          Phone number <span className="text-destructive">*</span>
+        </span>
         <input name="phone" type="tel" required className={inputClass} placeholder="+256 7xx xxx xxx" />
+      </label>
+
+      <label className="block space-y-1 text-sm">
+        <span className="font-medium">Email (optional)</span>
+        <input name="email" type="email" maxLength={254} className={inputClass} placeholder="you@example.com" />
       </label>
 
       <div className="space-y-2 text-sm">

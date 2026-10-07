@@ -100,9 +100,9 @@ function render(seed: SeedData): string {
     ),
     insertMany(
       'waitlist_entries',
-      'name, place, phone, photo_url, audio_url, created_at',
+      'name, place, phone, email, photo_url, audio_url, created_at',
       seed.waitlist,
-      (w) => `${q(w.name)}, ${q(w.place)}, ${q(w.phone)}, ${q(w.photoUrl)}, ${q(w.audioUrl)}, ${ts(w.createdAt)}`,
+      (w) => `${q(w.name)}, ${q(w.place)}, ${q(w.phone)}, ${q(w.email)}, ${q(w.photoUrl)}, ${q(w.audioUrl)}, ${ts(w.createdAt)}`,
     ),
   ]
   return parts.join('\n')

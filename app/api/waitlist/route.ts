@@ -19,6 +19,7 @@ export async function POST(request: Request) {
   const name = typeof body.name === 'string' ? body.name.trim() : ''
   const place = typeof body.place === 'string' ? body.place.trim() : ''
   const phone = typeof body.phone === 'string' ? body.phone.trim() : ''
+  const email = typeof body.email === 'string' && body.email.trim() ? body.email.trim() : null
   const photoUrl = typeof body.photoUrl === 'string' && body.photoUrl.trim() ? body.photoUrl.trim() : null
   const audioUrl = typeof body.audioUrl === 'string' && body.audioUrl.trim() ? body.audioUrl.trim() : null
 
@@ -32,7 +33,16 @@ export async function POST(request: Request) {
   if (!/^\+?[\d\s-]{7,20}$/.test(phone)) {
     return NextResponse.json({ error: 'Enter a valid phone number' }, { status: 400 })
   }
+  // Simple shape check, not a full RFC 5322 validator: good enough to catch typos.
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return NextResponse.json({ error: 'Enter a valid email address' }, { status: 400 })
+  }
 
-  await getDataStore().createWaitlistEntry({ name, place, phone, photoUrl, audioUrl })
-  return NextResponse.json({ ok: true }, { status: 201 })
+  try {
+    await getDataStore().createWaitlistEntry({ name, place, phone, email, photoUrl, audioUrl })
+    return NextResponse.json({ ok: true }, { status: 201 })
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json({ error: 'Could not save that right now. Please try again.' }, { status: 502 })
+  }
 }
