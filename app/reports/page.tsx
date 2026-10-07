@@ -30,7 +30,7 @@ export default async function ReportsPage() {
   }))
 
   return (
-    <div className="space-y-10">
+    <div className="mx-auto max-w-6xl space-y-10 px-4 py-10">
       <header className="space-y-2">
         <h1 className="font-heading text-5xl">Reports &amp; map</h1>
         <p className="max-w-2xl text-muted-foreground">

@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <div className="mx-auto max-w-md space-y-5 py-16 text-center">
+    <div className="mx-auto max-w-md space-y-5 px-4 py-16 text-center">
       <p className="text-sm uppercase tracking-[0.2em] text-accent">Page not found</p>
       <h1 className="font-heading text-5xl">This page has run dry.</h1>
       <p className="text-muted-foreground">

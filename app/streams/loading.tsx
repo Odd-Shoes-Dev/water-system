@@ -4,7 +4,7 @@ import { Skeleton, SkeletonHeader } from '@/components/skeleton'
 // river counts and community figures.
 export default function Loading() {
   return (
-    <div className="space-y-12" aria-busy="true" aria-label="Loading data streams">
+    <div className="mx-auto max-w-6xl space-y-12 px-4 py-10" aria-busy="true" aria-label="Loading data streams">
       <SkeletonHeader />
 
       <section className="space-y-4">

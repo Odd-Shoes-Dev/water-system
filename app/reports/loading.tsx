@@ -3,7 +3,7 @@ import { Skeleton, SkeletonHeader } from '@/components/skeleton'
 // Shown while reports load. Mirrors the form, the map and the report list.
 export default function Loading() {
   return (
-    <div className="space-y-10" aria-busy="true" aria-label="Loading reports and map">
+    <div className="mx-auto max-w-6xl space-y-10 px-4 py-10" aria-busy="true" aria-label="Loading reports and map">
       <SkeletonHeader />
 
       <div className="grid gap-8 lg:grid-cols-[1fr_1.4fr]">

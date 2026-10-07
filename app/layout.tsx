@@ -3,9 +3,14 @@ import { RouteProgress } from '@/components/route-progress'
 import { SiteNav } from '@/components/site-nav'
 import './globals.css'
 
+const title = 'Rain & Renew'
+const description = 'Water level sensing, youth reporting and impact tracking for rainwater and greywater.'
+
 export const metadata: Metadata = {
-  title: 'Rain & Renew',
-  description: 'Water level sensing, youth reporting and impact tracking for rainwater and greywater.',
+  title,
+  description,
+  openGraph: { title, description, images: ['/hero-image.png'] },
+  twitter: { card: 'summary_large_image', title, description, images: ['/hero-image.png'] },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -14,10 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen">
         <RouteProgress />
         <SiteNav />
-        <main className="mx-auto max-w-6xl px-4 py-10">{children}</main>
-        <footer className="mx-auto max-w-6xl px-4 pb-10 text-sm text-muted-foreground">
-          Demo data is simulated for illustration.
-        </footer>
+        <main>{children}</main>
       </body>
     </html>
   )

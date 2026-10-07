@@ -9,7 +9,7 @@ export default async function StreamsPage() {
   const overview = await getStreamsOverview(getDataStore())
 
   return (
-    <div className="space-y-12">
+    <div className="mx-auto max-w-6xl space-y-12 px-4 py-10">
       <header className="space-y-2">
         <h1 className="font-heading text-5xl">Data streams</h1>
         <p className="max-w-2xl text-muted-foreground">

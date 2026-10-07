@@ -16,7 +16,7 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="mx-auto max-w-md space-y-5 py-16 text-center" role="alert">
+    <div className="mx-auto max-w-md space-y-5 px-4 py-16 text-center" role="alert">
       <p className="text-sm uppercase tracking-[0.2em] text-accent">Something went wrong</p>
       <h1 className="font-heading text-5xl">We couldn&apos;t load this page.</h1>
       <p className="text-muted-foreground">

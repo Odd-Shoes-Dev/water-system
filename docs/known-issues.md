@@ -29,14 +29,33 @@ urgent for the demo, but worth doing before this goes further than a pilot.
 
 ## Access control
 
-- **No login yet.** Until one exists:
+- **No real login yet.** The "Log in" link and `/login` currently redirect
+  straight to `/dashboard` with no authentication at all. That means
+  `/dashboard` (and everything under it: tanks, map, alerts, recycling,
+  river watch, impact) is reachable by anyone who opens that URL directly,
+  not only through the button.
+
+  The planned replacement, once there's a reason to build it (real team
+  members, not just this demo):
+  - Sign in with **Google**, so no passwords are ever stored.
+  - After Google confirms the person's identity, check their email against
+    an allowlist kept in the database (a small `team_members`-style table).
+    Not on the list → access denied with a clear message. On it → let them
+    in. Nobody self-registers; an admin adds the email first.
+  - This needs a Google Cloud OAuth app to be created first (only the
+    project owner can do this), with its Client ID and Secret added as
+    environment variables, the same pattern as the ImageKit keys.
+
+  Until that's built:
   - The reporter's name on a submitted report is visible to anyone who
     opens its details modal.
   - Anyone can open a report's full details ("admin-style" click-through),
     not just a trusted viewer.
   - The waitlist form only returns a count publicly (by design), but once
-    a login exists, an actual admin view of entries (with contact details)
-    should sit behind it.
+    real login exists, an actual admin view of entries (with contact
+    details) should sit behind it instead of the public count.
+  - "Sign out" in the dashboard sidebar just links back to the public home
+    page, since there's no session yet to end.
 
 ## Accessibility
 

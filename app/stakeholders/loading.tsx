@@ -3,7 +3,7 @@ import { Skeleton, SkeletonHeader } from '@/components/skeleton'
 // Shown while stakeholders load. Mirrors the four quadrant boxes and the map.
 export default function Loading() {
   return (
-    <div className="space-y-10" aria-busy="true" aria-label="Loading stakeholders">
+    <div className="mx-auto max-w-6xl space-y-10 px-4 py-10" aria-busy="true" aria-label="Loading stakeholders">
       <SkeletonHeader />
 
       <section className="grid gap-4 md:grid-cols-2">
