@@ -4,6 +4,7 @@ import type {
   GreywaterReading,
   GreywaterUnit,
   NewRiverReport,
+  NewWaitlistEntry,
   RainfallReading,
   RiverReport,
   Stakeholder,
@@ -33,4 +34,9 @@ export interface DataStore {
 
   findDeviceByKeyHash(keyHash: string): Promise<Device | null>
   touchDevice(deviceId: string): Promise<void>
+
+  // Only a count is exposed to the app; names and phone numbers are never
+  // listed back out, since this is personal data.
+  createWaitlistEntry(entry: NewWaitlistEntry): Promise<void>
+  countWaitlistEntries(): Promise<number>
 }

@@ -11,6 +11,7 @@ import type {
   Stakeholder,
   Tank,
   TankReading,
+  WaitlistEntry,
 } from '@/lib/data/types'
 import {
   createRng,
@@ -26,6 +27,7 @@ import {
   sampleReports,
   sampleStakeholders,
   sampleTanks,
+  sampleWaitlist,
 } from './sample-data'
 
 export const SEED_START = new Date('2026-09-05T00:00:00Z')
@@ -41,6 +43,7 @@ export type SeedData = {
   activities: Activity[]
   stakeholders: Stakeholder[]
   devices: Device[]
+  waitlist: WaitlistEntry[]
 }
 
 export function buildSeed(): SeedData {
@@ -75,6 +78,13 @@ export function buildSeed(): SeedData {
     id: index + 1,
   }))
 
+  const waitlistDate = new Date('2026-08-25T09:00:00Z')
+  const waitlist: WaitlistEntry[] = sampleWaitlist.map((entry, index) => ({
+    ...entry,
+    id: index + 1,
+    createdAt: new Date(waitlistDate.getTime() + index * 86_400_000),
+  }))
+
   const devices: Device[] = [
     {
       id: DEMO_DEVICE_ID,
@@ -94,5 +104,6 @@ export function buildSeed(): SeedData {
     activities,
     stakeholders,
     devices,
+    waitlist,
   }
 }

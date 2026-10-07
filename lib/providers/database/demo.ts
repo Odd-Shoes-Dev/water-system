@@ -1,7 +1,7 @@
 // In-memory provider used when DATABASE_URL is not set. Data resets when the
 // server restarts, which is fine for a demo.
 import type { DataStore } from '@/lib/data/store'
-import type { NewRiverReport, RiverReport } from '@/lib/data/types'
+import type { NewRiverReport, NewWaitlistEntry, RiverReport, WaitlistEntry } from '@/lib/data/types'
 import { buildSeed } from './seed'
 
 export function createDemoStore(): DataStore {
@@ -11,6 +11,7 @@ export function createDemoStore(): DataStore {
   const greywaterReadings = [...seed.greywaterReadings]
   const reports = [...seed.reports]
   const devices = [...seed.devices]
+  const waitlist = [...seed.waitlist]
 
   return {
     async listTanks() {
@@ -67,6 +68,14 @@ export function createDemoStore(): DataStore {
     async touchDevice(deviceId) {
       const device = devices.find((d) => d.id === deviceId)
       if (device) device.lastSeenAt = new Date()
+    },
+
+    async createWaitlistEntry(entry: NewWaitlistEntry) {
+      const created: WaitlistEntry = { ...entry, id: waitlist.length + 1, createdAt: new Date() }
+      waitlist.push(created)
+    },
+    async countWaitlistEntries() {
+      return waitlist.length
     },
   }
 }

@@ -7,6 +7,7 @@ import { buildSeed, type SeedData } from '../lib/providers/database/seed'
 const q = (value: string | null) => (value === null ? 'null' : `'${value.replace(/'/g, "''")}'`)
 const n = (value: number | null) => (value === null ? 'null' : String(value))
 const ts = (date: Date) => `'${date.toISOString()}'`
+const arr = (values: string[]) => `ARRAY[${values.map((v) => q(v)).join(', ')}]::text[]`
 
 function values<T>(rows: T[], toRow: (row: T) => string): string {
   return rows.map((row) => `  (${toRow(row)})`).join(',\n')
@@ -66,10 +67,10 @@ function render(seed: SeedData): string {
     ),
     insertMany(
       'river_reports',
-      'category, description, location_description, latitude, longitude, photo_url, reporter_name, status, created_at',
+      'category, description, location_description, latitude, longitude, photo_urls, reporter_name, status, created_at',
       seed.reports,
       (r) =>
-        `${q(r.category)}, ${q(r.description)}, ${q(r.locationDescription)}, ${n(r.latitude)}, ${n(r.longitude)}, ${q(r.photoUrl)}, ${q(r.reporterName)}, ${q(r.status)}, ${ts(r.createdAt)}`,
+        `${q(r.category)}, ${q(r.description)}, ${q(r.locationDescription)}, ${n(r.latitude)}, ${n(r.longitude)}, ${arr(r.photoUrls)}, ${q(r.reporterName)}, ${q(r.status)}, ${ts(r.createdAt)}`,
     ),
     insertMany(
       'community_activities',
@@ -90,6 +91,12 @@ function render(seed: SeedData): string {
       'id, tank_id, key_hash',
       seed.devices,
       (d) => `${q(d.id)}, ${q(d.tankId)}, ${q(d.keyHash)}`,
+    ),
+    insertMany(
+      'waitlist_entries',
+      'name, place, phone, photo_url, audio_url, created_at',
+      seed.waitlist,
+      (w) => `${q(w.name)}, ${q(w.place)}, ${q(w.phone)}, ${q(w.photoUrl)}, ${q(w.audioUrl)}, ${ts(w.createdAt)}`,
     ),
   ]
   return parts.join('\n')

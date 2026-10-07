@@ -38,6 +38,17 @@ export default function Loading() {
           ))}
         </div>
       </section>
+
+      <section className="space-y-4 border-t border-border pt-10">
+        <Skeleton className="h-8 w-56" />
+        <Skeleton className="h-4 w-48" />
+        <div className="max-w-xl space-y-3 rounded-lg border border-border bg-card p-5">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-11 w-full rounded-full" />
+        </div>
+      </section>
     </div>
   )
 }

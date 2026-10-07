@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getDataStore } from '@/lib/data'
-import { REPORT_CATEGORIES, type ReportCategory } from '@/lib/data/types'
+import { MAX_REPORT_PHOTOS, REPORT_CATEGORIES, type ReportCategory } from '@/lib/data/types'
 
 export const dynamic = 'force-dynamic'
 
@@ -9,8 +9,7 @@ export async function GET() {
   return NextResponse.json({ reports })
 }
 
-// Youth submit reports from the app. Login and photo uploads come later; for
-// now the photo URL is optional.
+// Youth submit reports from the app. Login comes later.
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as Record<string, unknown> | null
   if (!body) {
@@ -25,7 +24,9 @@ export async function POST(request: Request) {
   const reporterName = typeof body.reporterName === 'string' && body.reporterName.trim()
     ? body.reporterName.trim()
     : null
-  const photoUrl = typeof body.photoUrl === 'string' && body.photoUrl.trim() ? body.photoUrl.trim() : null
+  const photoUrls = Array.isArray(body.photoUrls)
+    ? body.photoUrls.filter((url): url is string => typeof url === 'string' && url.trim().length > 0).map((url) => url.trim())
+    : []
 
   if (typeof category !== 'string' || !(category in REPORT_CATEGORIES)) {
     return NextResponse.json({ error: 'Choose a valid report category' }, { status: 400 })
@@ -45,6 +46,9 @@ export async function POST(request: Request) {
   if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
     return NextResponse.json({ error: 'Longitude must be between -180 and 180' }, { status: 400 })
   }
+  if (photoUrls.length > MAX_REPORT_PHOTOS) {
+    return NextResponse.json({ error: `You can attach up to ${MAX_REPORT_PHOTOS} photos` }, { status: 400 })
+  }
 
   const report = await getDataStore().createRiverReport({
     category: category as ReportCategory,
@@ -52,7 +56,7 @@ export async function POST(request: Request) {
     locationDescription,
     latitude,
     longitude,
-    photoUrl,
+    photoUrls,
     reporterName,
   })
   return NextResponse.json({ report }, { status: 201 })

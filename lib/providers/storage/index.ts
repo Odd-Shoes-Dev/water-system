@@ -1,7 +1,7 @@
 import { createImageKitStorage } from './imagekit'
 import type { StorageProvider } from './types'
 
-export type { StorageProvider, UploadedFile, UploadImageInput } from './types'
+export type { StorageProvider, UploadedFile, UploadFileInput } from './types'
 
 let provider: StorageProvider | undefined
 

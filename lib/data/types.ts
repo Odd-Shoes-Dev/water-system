@@ -63,11 +63,14 @@ export type RiverReport = {
   locationDescription: string
   latitude: number
   longitude: number
-  photoUrl: string | null
+  // Up to MAX_REPORT_PHOTOS photos (see lib/data/types.ts).
+  photoUrls: string[]
   reporterName: string | null
   status: 'open' | 'verified' | 'resolved'
   createdAt: Date
 }
+
+export const MAX_REPORT_PHOTOS = 10
 
 export type NewRiverReport = {
   category: ReportCategory
@@ -75,7 +78,7 @@ export type NewRiverReport = {
   locationDescription: string
   latitude: number
   longitude: number
-  photoUrl: string | null
+  photoUrls: string[]
   reporterName: string | null
 }
 
@@ -109,4 +112,24 @@ export type Device = {
   tankId: string
   keyHash: string
   lastSeenAt: Date | null
+}
+
+// General interest list: anyone who wants to be part of the programme, not
+// tied to one specific offer (a tank, training, and so on).
+export type WaitlistEntry = {
+  id: number
+  name: string
+  place: string
+  phone: string
+  photoUrl: string | null
+  audioUrl: string | null
+  createdAt: Date
+}
+
+export type NewWaitlistEntry = {
+  name: string
+  place: string
+  phone: string
+  photoUrl: string | null
+  audioUrl: string | null
 }

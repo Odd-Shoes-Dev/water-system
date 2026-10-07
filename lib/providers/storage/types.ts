@@ -5,13 +5,13 @@ export type UploadedFile = {
   fileId: string
 }
 
-export type UploadImageInput = {
+export type UploadFileInput = {
   data: Buffer
   fileName: string
-  // Subfolder under this project's own ImageKit folder, e.g. "river-reports".
+  // Subfolder under this project's own storage folder, e.g. "river-reports".
   folder: string
 }
 
 export interface StorageProvider {
-  uploadImage(input: UploadImageInput): Promise<UploadedFile>
+  uploadFile(input: UploadFileInput): Promise<UploadedFile>
 }

@@ -4,7 +4,7 @@
 // Uses ImageKit's plain upload API (https://upload.imagekit.io/api/v1/files/upload)
 // with the account's private key, rather than adding the ImageKit SDK as a
 // dependency. See imagekit_documention.json at the project root for the API shape.
-import type { StorageProvider, UploadedFile, UploadImageInput } from './types'
+import type { StorageProvider, UploadedFile, UploadFileInput } from './types'
 
 const UPLOAD_URL = 'https://upload.imagekit.io/api/v1/files/upload'
 
@@ -23,7 +23,7 @@ function scopedFolder(folder: string): string {
 
 export function createImageKitStorage(): StorageProvider {
   return {
-    async uploadImage({ data, fileName, folder }: UploadImageInput): Promise<UploadedFile> {
+    async uploadFile({ data, fileName, folder }: UploadFileInput): Promise<UploadedFile> {
       const privateKey = env('IMAGEKIT_PRIVATE_KEY')
       env('IMAGEKIT_URL_ENDPOINT') // validated here; the URL itself comes back in the response
 

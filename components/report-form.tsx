@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { REPORT_CATEGORIES } from '@/lib/data/types'
+import { MAX_REPORT_PHOTOS, REPORT_CATEGORIES } from '@/lib/data/types'
 import type { Position } from './location-picker'
 
 // The map needs the browser, so it's loaded only on the client.
@@ -15,6 +15,8 @@ const LocationPicker = dynamic(() => import('./location-picker'), {
 const DEFAULT_POSITION: Position = { latitude: -0.61, longitude: 30.65 }
 const round = (n: number) => Math.round(n * 1e6) / 1e6
 
+type PhotoSlot = { id: string; file: File; preview: string }
+
 export function ReportForm() {
   const router = useRouter()
   const [position, setPosition] = useState<Position>(DEFAULT_POSITION)
@@ -24,10 +26,9 @@ export function ReportForm() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
-  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photos, setPhotos] = useState<PhotoSlot[]>([])
   const [photoError, setPhotoError] = useState<string | null>(null)
-  const [uploadingPhoto, setUploadingPhoto] = useState(false)
+  const [uploadingPhotos, setUploadingPhotos] = useState(false)
   const statusRef = useRef<HTMLDivElement>(null)
   const photoInputRef = useRef<HTMLInputElement>(null)
 
@@ -38,22 +39,40 @@ export function ReportForm() {
     }
   }, [error, success])
 
-  function handlePhotoChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0] ?? null
+  function addPhotos(event: React.ChangeEvent<HTMLInputElement>) {
+    const chosen = Array.from(event.target.files ?? [])
+    event.target.value = '' // lets the same file be picked again later if removed
+    if (chosen.length === 0) return
+
     setPhotoError(null)
-    setPhotoPreview((previous) => {
-      if (previous) URL.revokeObjectURL(previous)
-      return file ? URL.createObjectURL(file) : null
+    setPhotos((current) => {
+      const room = MAX_REPORT_PHOTOS - current.length
+      if (room <= 0) {
+        setPhotoError(`You can attach up to ${MAX_REPORT_PHOTOS} photos.`)
+        return current
+      }
+      const accepted = chosen.slice(0, room)
+      if (chosen.length > accepted.length) {
+        setPhotoError(`Only ${room} more photo${room === 1 ? '' : 's'} could be added (maximum ${MAX_REPORT_PHOTOS}).`)
+      }
+      const added = accepted.map((file) => ({ id: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`, file, preview: URL.createObjectURL(file) }))
+      return [...current, ...added]
     })
-    setPhotoFile(file)
   }
 
-  function clearPhoto() {
-    setPhotoPreview((previous) => {
-      if (previous) URL.revokeObjectURL(previous)
-      return null
+  function removePhoto(id: string) {
+    setPhotos((current) => {
+      const target = current.find((p) => p.id === id)
+      if (target) URL.revokeObjectURL(target.preview)
+      return current.filter((p) => p.id !== id)
     })
-    setPhotoFile(null)
+  }
+
+  function clearPhotos() {
+    setPhotos((current) => {
+      current.forEach((p) => URL.revokeObjectURL(p.preview))
+      return []
+    })
     setPhotoError(null)
     if (photoInputRef.current) photoInputRef.current.value = ''
   }
@@ -97,28 +116,30 @@ export function ReportForm() {
 
     const data = new FormData(form)
 
-    let photoUrl: string | null = null
-    if (photoFile) {
-      setUploadingPhoto(true)
-      const photoData = new FormData()
-      photoData.append('file', photoFile)
+    let photoUrls: string[] = []
+    if (photos.length > 0) {
+      setUploadingPhotos(true)
       try {
-        const uploadResponse = await fetch('/api/uploads', { method: 'POST', body: photoData })
-        const uploadBody = await uploadResponse.json().catch(() => null)
-        if (!uploadResponse.ok) {
-          setPhotoError(uploadBody?.error ?? 'Could not upload the photo')
-          setSubmitting(false)
-          setUploadingPhoto(false)
-          return
-        }
-        photoUrl = uploadBody.url
-      } catch {
-        setPhotoError('Could not upload the photo. Check your connection and try again.')
+        photoUrls = await Promise.all(
+          photos.map(async (photo) => {
+            const photoData = new FormData()
+            photoData.append('file', photo.file)
+            const uploadResponse = await fetch('/api/uploads?purpose=river-report-photo', {
+              method: 'POST',
+              body: photoData,
+            })
+            const uploadBody = await uploadResponse.json().catch(() => null)
+            if (!uploadResponse.ok) throw new Error(uploadBody?.error ?? 'Could not upload a photo')
+            return uploadBody.url as string
+          }),
+        )
+      } catch (uploadError) {
+        setPhotoError(uploadError instanceof Error ? uploadError.message : 'Could not upload the photos')
         setSubmitting(false)
-        setUploadingPhoto(false)
+        setUploadingPhotos(false)
         return
       }
-      setUploadingPhoto(false)
+      setUploadingPhotos(false)
     }
 
     const payload = {
@@ -128,7 +149,7 @@ export function ReportForm() {
       latitude: position.latitude,
       longitude: position.longitude,
       reporterName: data.get('reporterName'),
-      photoUrl,
+      photoUrls,
     }
 
     try {
@@ -145,7 +166,7 @@ export function ReportForm() {
       }
 
       form.reset()
-      clearPhoto()
+      clearPhotos()
       setSuccess(true)
       router.refresh()
     } catch {
@@ -209,29 +230,39 @@ export function ReportForm() {
       </label>
 
       <div className="space-y-2 text-sm">
-        <span className="font-medium">Photo (optional)</span>
-        {photoPreview ? (
-          <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element -- preview of a locally chosen file, not a remote asset */}
-            <img src={photoPreview} alt="Selected photo preview" className="h-20 w-20 rounded-md object-cover" />
-            <button
-              type="button"
-              onClick={clearPhoto}
-              className="rounded-full border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:border-destructive hover:text-destructive"
-            >
-              Remove photo
-            </button>
+        <span className="font-medium">Photos (optional, up to {MAX_REPORT_PHOTOS})</span>
+
+        {photos.length > 0 && (
+          <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
+            {photos.map((photo) => (
+              <div key={photo.id} className="group relative aspect-square">
+                {/* eslint-disable-next-line @next/next/no-img-element -- preview of a locally chosen file, not a remote asset */}
+                <img src={photo.preview} alt="Selected photo preview" className="h-full w-full rounded-md object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removePhoto(photo.id)}
+                  aria-label="Remove this photo"
+                  className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-xs leading-none text-destructive-foreground"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
           </div>
-        ) : (
+        )}
+
+        {photos.length < MAX_REPORT_PHOTOS && (
           <input
             ref={photoInputRef}
             type="file"
             accept="image/jpeg,image/png,image/webp,image/gif"
             capture="environment"
-            onChange={handlePhotoChange}
+            multiple
+            onChange={addPhotos}
             className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-secondary file:px-4 file:py-2 file:text-sm file:font-medium file:text-secondary-foreground"
           />
         )}
+        <p className="text-xs text-muted-foreground">{photos.length} of {MAX_REPORT_PHOTOS} photos added</p>
         {photoError && <p role="alert" className="text-sm text-destructive">{photoError}</p>}
       </div>
 
@@ -254,7 +285,11 @@ export function ReportForm() {
         disabled={submitting}
         className="w-full rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-60"
       >
-        {uploadingPhoto ? 'Uploading photo…' : submitting ? 'Saving…' : 'Submit report'}
+        {uploadingPhotos
+          ? `Uploading ${photos.length} photo${photos.length === 1 ? '' : 's'}…`
+          : submitting
+            ? 'Saving…'
+            : 'Submit report'}
       </button>
     </form>
   )

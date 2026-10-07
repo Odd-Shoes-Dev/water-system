@@ -8,6 +8,7 @@ import type {
   GreywaterReading,
   GreywaterUnit,
   NewRiverReport,
+  NewWaitlistEntry,
   RainfallReading,
   ReportCategory,
   RiverReport,
@@ -153,7 +154,7 @@ export function createNeonStore(databaseUrl: string): DataStore {
 
     async listRiverReports(): Promise<RiverReport[]> {
       const rows = await sql`
-        select id, category, description, location_description, latitude, longitude, photo_url, reporter_name, status, created_at
+        select id, category, description, location_description, latitude, longitude, photo_urls, reporter_name, status, created_at
         from river_reports
         order by created_at desc`
       return rows.map(mapReport)
@@ -161,10 +162,10 @@ export function createNeonStore(databaseUrl: string): DataStore {
 
     async createRiverReport(report: NewRiverReport): Promise<RiverReport> {
       const rows = await sql`
-        insert into river_reports (category, description, location_description, latitude, longitude, photo_url, reporter_name)
+        insert into river_reports (category, description, location_description, latitude, longitude, photo_urls, reporter_name)
         values (${report.category}, ${report.description}, ${report.locationDescription}, ${report.latitude},
-                ${report.longitude}, ${report.photoUrl}, ${report.reporterName})
-        returning id, category, description, location_description, latitude, longitude, photo_url, reporter_name, status, created_at`
+                ${report.longitude}, ${report.photoUrls}::text[], ${report.reporterName})
+        returning id, category, description, location_description, latitude, longitude, photo_urls, reporter_name, status, created_at`
       return mapReport(rows[0])
     },
 
@@ -220,6 +221,17 @@ export function createNeonStore(databaseUrl: string): DataStore {
     async touchDevice(deviceId: string): Promise<void> {
       await sql`update devices set last_seen_at = now() where id = ${deviceId}`
     },
+
+    async createWaitlistEntry(entry: NewWaitlistEntry): Promise<void> {
+      await sql`
+        insert into waitlist_entries (name, place, phone, photo_url, audio_url)
+        values (${entry.name}, ${entry.place}, ${entry.phone}, ${entry.photoUrl}, ${entry.audioUrl})`
+    },
+
+    async countWaitlistEntries(): Promise<number> {
+      const rows = await sql`select count(*)::int as count from waitlist_entries`
+      return Number(rows[0]?.count ?? 0)
+    },
   }
 }
 
@@ -231,7 +243,7 @@ function mapReport(r: Record<string, any>): RiverReport {
     locationDescription: r.location_description ?? '',
     latitude: Number(r.latitude),
     longitude: Number(r.longitude),
-    photoUrl: r.photo_url ?? null,
+    photoUrls: r.photo_urls ?? [],
     reporterName: r.reporter_name ?? null,
     status: r.status,
     createdAt: new Date(r.created_at),

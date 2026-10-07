@@ -6,6 +6,7 @@ import type {
   RiverReport,
   Stakeholder,
   Tank,
+  WaitlistEntry,
 } from '@/lib/data/types'
 
 export const SITES = ['Kampala', 'Mbarara', 'Gulu'] as const
@@ -39,11 +40,21 @@ export const sampleStakeholders: Omit<Stakeholder, 'id'>[] = [
   { name: 'Development funder', organisationType: 'funder', role: 'Funds pilot phase', influence: 5, interest: 3, latitude: null, longitude: null },
 ]
 
+// Placeholder phone numbers and names for the demo; real entries are never listed
+// back out to the app, only counted, since this is personal data.
+export const sampleWaitlist: Omit<WaitlistEntry, 'id' | 'createdAt'>[] = [
+  { name: 'Sample applicant 1', place: 'Kampala', phone: '+256700000001', photoUrl: null, audioUrl: null },
+  { name: 'Sample applicant 2', place: 'Mbarara', phone: '+256700000002', photoUrl: null, audioUrl: null },
+  { name: 'Sample applicant 3', place: 'Gulu', phone: '+256700000003', photoUrl: null, audioUrl: null },
+  { name: 'Sample applicant 4', place: 'Mbarara', phone: '+256700000004', photoUrl: null, audioUrl: null },
+  { name: 'Sample applicant 5', place: 'Kampala', phone: '+256700000005', photoUrl: null, audioUrl: null },
+]
+
 export const sampleReports: Omit<RiverReport, 'id' | 'createdAt' | 'locationDescription'>[] = [
-  { category: 'illegal_dumping', description: 'Household waste dumped on the bank near the bridge.', latitude: -0.6081, longitude: 30.6502, photoUrl: null, reporterName: 'Sample reporter', status: 'open' },
-  { category: 'pollution_hotspot', description: 'Discoloured water coming from an outflow pipe.', latitude: -0.6115, longitude: 30.6538, photoUrl: null, reporterName: 'Sample reporter', status: 'verified' },
-  { category: 'blocked_drainage', description: 'Drain blocked with plastic, water pooling on the road.', latitude: -0.6049, longitude: 30.6571, photoUrl: null, reporterName: null, status: 'open' },
-  { category: 'riverbank_degradation', description: 'Bank collapsing after heavy rain.', latitude: -0.6138, longitude: 30.6467, photoUrl: null, reporterName: 'Sample reporter', status: 'open' },
-  { category: 'clean_up', description: 'Youth group cleared the riverbank.', latitude: -0.6093, longitude: 30.6525, photoUrl: null, reporterName: 'Sample reporter', status: 'resolved' },
-  { category: 'restoration', description: 'Trees planted along the bank.', latitude: -0.6127, longitude: 30.6489, photoUrl: null, reporterName: null, status: 'resolved' },
+  { category: 'illegal_dumping', description: 'Household waste dumped on the bank near the bridge.', latitude: -0.6081, longitude: 30.6502, photoUrls: [], reporterName: 'Sample reporter', status: 'open' },
+  { category: 'pollution_hotspot', description: 'Discoloured water coming from an outflow pipe.', latitude: -0.6115, longitude: 30.6538, photoUrls: [], reporterName: 'Sample reporter', status: 'verified' },
+  { category: 'blocked_drainage', description: 'Drain blocked with plastic, water pooling on the road.', latitude: -0.6049, longitude: 30.6571, photoUrls: [], reporterName: null, status: 'open' },
+  { category: 'riverbank_degradation', description: 'Bank collapsing after heavy rain.', latitude: -0.6138, longitude: 30.6467, photoUrls: [], reporterName: 'Sample reporter', status: 'open' },
+  { category: 'clean_up', description: 'Youth group cleared the riverbank.', latitude: -0.6093, longitude: 30.6525, photoUrls: [], reporterName: 'Sample reporter', status: 'resolved' },
+  { category: 'restoration', description: 'Trees planted along the bank.', latitude: -0.6127, longitude: 30.6489, photoUrls: [], reporterName: null, status: 'resolved' },
 ]
