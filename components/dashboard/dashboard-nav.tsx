@@ -27,7 +27,7 @@ export function DashboardNav() {
   const pathname = usePathname()
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col bg-sidebar px-4 py-6 text-sidebar-foreground">
+    <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col overflow-y-auto bg-sidebar px-4 py-6 text-sidebar-foreground">
       <Link href="/" className="flex items-center gap-2 px-2 font-heading text-xl text-white">
         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-sidebar-accent text-accent">
           <DropletIcon className="h-4 w-4" />

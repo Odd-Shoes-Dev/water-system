@@ -1,36 +1,20 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { ActivityForm } from './activity-form'
 import { ACTIVITY_KIND_LABELS, type Activity } from '@/lib/data/types'
 
 const number = (value: number) => value.toLocaleString('en-US')
 const formatDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { dateStyle: 'medium' })
 
+// Pure display: the "+ Log activity" trigger and its form live in
+// RiverWatchTabs, which owns both the Reports and Restoration add-flows.
 export function ActivitiesList({ activities }: { activities: Activity[] }) {
-  const [items, setItems] = useState(activities)
-  useEffect(() => setItems(activities), [activities])
-  const [formOpen, setFormOpen] = useState(false)
+  const riverCleanUps = activities.filter((a) => a.kind === 'clean_up').length
+  const treesPlanted = activities.reduce((sum, a) => sum + a.treesPlanted, 0)
+  const youthEngaged = activities.reduce((sum, a) => sum + a.youthCount, 0)
+  const wasteCollectedKg = activities.reduce((sum, a) => sum + a.wasteCollectedKg, 0)
 
-  const riverCleanUps = items.filter((a) => a.kind === 'clean_up').length
-  const treesPlanted = items.reduce((sum, a) => sum + a.treesPlanted, 0)
-  const youthEngaged = items.reduce((sum, a) => sum + a.youthCount, 0)
-  const wasteCollectedKg = items.reduce((sum, a) => sum + a.wasteCollectedKg, 0)
-
-  const sorted = [...items].sort((a, b) => (a.occurredOn < b.occurredOn ? 1 : -1))
+  const sorted = [...activities].sort((a, b) => (a.occurredOn < b.occurredOn ? 1 : -1))
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-end">
-        <button
-          type="button"
-          onClick={() => setFormOpen(true)}
-          className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-        >
-          + Log activity
-        </button>
-      </div>
-
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <Stat label="River clean-ups" value={number(riverCleanUps)} />
         <Stat label="Trees planted" value={number(treesPlanted)} />
@@ -73,16 +57,6 @@ export function ActivitiesList({ activities }: { activities: Activity[] }) {
           </li>
         ))}
       </ul>
-
-      {formOpen && (
-        <ActivityForm
-          onClose={() => setFormOpen(false)}
-          onCreated={(activity) => {
-            setItems((current) => [activity, ...current])
-            setFormOpen(false)
-          }}
-        />
-      )}
     </div>
   )
 }

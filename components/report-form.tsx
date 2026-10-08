@@ -17,7 +17,7 @@ const round = (n: number) => Math.round(n * 1e6) / 1e6
 
 type PhotoSlot = { id: string; file: File; preview: string }
 
-export function ReportForm() {
+export function ReportForm({ embedded = false }: { embedded?: boolean } = {}) {
   const router = useRouter()
   const [position, setPosition] = useState<Position>(DEFAULT_POSITION)
   const [target, setTarget] = useState<(Position & { nonce: number }) | null>(null)
@@ -179,8 +179,8 @@ export function ReportForm() {
   const inputClass = 'w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 rounded-lg border border-border bg-card p-5">
-      <h2 className="font-heading text-2xl">Report an issue</h2>
+    <form onSubmit={handleSubmit} className={embedded ? 'space-y-5' : 'space-y-5 rounded-lg border border-border bg-card p-5'}>
+      {!embedded && <h2 className="font-heading text-2xl">Report an issue</h2>}
 
       <label className="block space-y-1 text-sm">
         <span className="font-medium">What did you see?</span>

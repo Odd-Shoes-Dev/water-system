@@ -13,9 +13,9 @@ const markerColors: Record<string, string> = {
   restoration: 'hsl(158 55% 38%)',
 }
 
-// View-only reports: the public Reports & map page has the submission form.
-// Restoration activities can be logged from here, there's no public form for
-// those, they're a team action.
+// The "+ Report issue" / "+ Log activity" button (in RiverWatchTabs) lets a
+// logged-in team member report something they heard about, or log a
+// restoration activity, reusing the same public report form either way.
 export default async function DashboardRiverWatchPage() {
   const store = getDataStore()
   const [reports, activities] = await Promise.all([store.listRiverReports(), store.listActivities()])
@@ -31,10 +31,7 @@ export default async function DashboardRiverWatchPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm uppercase tracking-[0.2em] text-accent">River Rwizi</p>
-        <h1 className="mt-2 font-heading text-4xl">River watch</h1>
-      </div>
+      <p className="text-sm uppercase tracking-[0.2em] text-accent">River Rwizi</p>
       <RiverWatchTabs
         reports={reports.map((report) => ({ ...report, createdAt: report.createdAt.toISOString() }))}
         activities={activities}
