@@ -44,8 +44,12 @@ export function DashboardNav() {
 
   return (
     <>
-      {/* Mobile-only top bar: the sidebar itself is off-canvas below md. */}
-      <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-card px-4 py-3 md:hidden">
+      {/* Mobile-only top bar: the sidebar itself is off-canvas below md.
+          Leaflet gives its own map panes z-index values up to 700, so
+          anything meant to sit above a map (this bar, the drawer and its
+          backdrop) needs to clear that by a wide margin, same reasoning as
+          Modal and ImageLightbox. */}
+      <header className="sticky top-0 z-[1000] flex items-center gap-3 border-b border-border bg-card px-4 py-3 md:hidden">
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -61,14 +65,14 @@ export function DashboardNav() {
 
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          className="fixed inset-0 z-[1990] bg-black/50 md:hidden"
           onClick={() => setOpen(false)}
           aria-hidden="true"
         />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-64 shrink-0 flex-col overflow-y-auto bg-sidebar px-4 py-6 text-sidebar-foreground transition-transform duration-200 ease-in-out md:sticky md:top-0 md:z-auto md:h-screen md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-[2000] flex h-dvh w-64 shrink-0 flex-col overflow-y-auto bg-sidebar px-4 py-6 text-sidebar-foreground transition-transform duration-200 ease-in-out md:sticky md:top-0 md:z-auto md:h-screen md:translate-x-0 ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
