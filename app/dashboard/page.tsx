@@ -26,7 +26,10 @@ export default async function DashboardOverviewPage() {
     <div className="space-y-8">
       <div>
         <p className="text-sm uppercase tracking-[0.2em] text-accent">Overview</p>
-        <h1 className="mt-2 font-heading text-5xl">Welcome back</h1>
+        {/* "Team member" matches the sidebar footer's placeholder; both become
+            the real signed-in name once Google sign-in + the allowlist land
+            (see docs/known-issues.md). */}
+        <h1 className="mt-2 font-heading text-5xl">Hello, Team member</h1>
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
