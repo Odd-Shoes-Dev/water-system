@@ -24,11 +24,11 @@ export const sampleGreywaterUnits: GreywaterUnit[] = [
 ]
 
 export const sampleActivities: Omit<Activity, 'id'>[] = [
-  { kind: 'training', title: 'Youth rainwater harvesting training', occurredOn: '2026-08-12', youthCount: 45, householdsReached: 0, facilitiesCount: 2, treesPlanted: 0, participants: 45 },
-  { kind: 'clean_up', title: 'Rwizi riverbank clean-up', occurredOn: '2026-08-20', youthCount: 30, householdsReached: 0, facilitiesCount: 0, treesPlanted: 0, participants: 40 },
-  { kind: 'restoration', title: 'Riverbank tree planting', occurredOn: '2026-09-05', youthCount: 25, householdsReached: 0, facilitiesCount: 1, treesPlanted: 120, participants: 35 },
-  { kind: 'household_adoption', title: 'Household tank installation drive', occurredOn: '2026-09-18', youthCount: 0, householdsReached: 60, facilitiesCount: 0, treesPlanted: 0, participants: 60 },
-  { kind: 'clean_up', title: 'Drainage clearing in Gulu', occurredOn: '2026-09-27', youthCount: 20, householdsReached: 35, facilitiesCount: 1, treesPlanted: 0, participants: 28 },
+  { kind: 'training', title: 'Youth rainwater harvesting training', location: 'Kawempe', description: 'Hands-on training on tank care and basic maintenance.', occurredOn: '2026-08-12', youthCount: 45, householdsReached: 0, facilitiesCount: 2, treesPlanted: 0, participants: 45, wasteCollectedKg: 0, areaRestoredM2: 0, photoUrls: [] },
+  { kind: 'clean_up', title: 'Rwizi riverbank clean-up', location: 'Rwizi bridge', description: 'Cleared plastic and silt from the bridge section.', occurredOn: '2026-08-20', youthCount: 30, householdsReached: 0, facilitiesCount: 0, treesPlanted: 0, participants: 40, wasteCollectedKg: 180, areaRestoredM2: 900, photoUrls: [] },
+  { kind: 'restoration', title: 'Riverbank tree planting', location: 'Kakoba', description: 'Bamboo and indigenous seedlings along the riparian strip.', occurredOn: '2026-09-05', youthCount: 25, householdsReached: 0, facilitiesCount: 1, treesPlanted: 120, participants: 35, wasteCollectedKg: 0, areaRestoredM2: 600, photoUrls: [] },
+  { kind: 'household_adoption', title: 'Household tank installation drive', location: 'Mbarara', description: 'Door-to-door sign-up for subsidised household tanks.', occurredOn: '2026-09-18', youthCount: 0, householdsReached: 60, facilitiesCount: 0, treesPlanted: 0, participants: 60, wasteCollectedKg: 0, areaRestoredM2: 0, photoUrls: [] },
+  { kind: 'clean_up', title: 'Drainage clearing in Gulu', location: 'Kakyeka', description: 'Market-day clean-up with the youth environmental club.', occurredOn: '2026-09-27', youthCount: 20, householdsReached: 35, facilitiesCount: 1, treesPlanted: 0, participants: 28, wasteCollectedKg: 240, areaRestoredM2: 400, photoUrls: [] },
 ]
 
 export const sampleStakeholders: Omit<Stakeholder, 'id'>[] = [

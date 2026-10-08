@@ -3,6 +3,7 @@ import type {
   Device,
   GreywaterReading,
   GreywaterUnit,
+  NewActivity,
   NewRiverReport,
   NewWaitlistEntry,
   RainfallReading,
@@ -28,8 +29,12 @@ export interface DataStore {
 
   listRiverReports(): Promise<RiverReport[]>
   createRiverReport(report: NewRiverReport): Promise<RiverReport>
+  // Dashboard-only action: there's no login yet to restrict this to the
+  // team, see docs/known-issues.md.
+  updateRiverReportStatus(id: number, status: RiverReport['status']): Promise<RiverReport | null>
 
   listActivities(): Promise<Activity[]>
+  createActivity(activity: NewActivity): Promise<Activity>
   listStakeholders(): Promise<Stakeholder[]>
 
   findDeviceByKeyHash(keyHash: string): Promise<Device | null>

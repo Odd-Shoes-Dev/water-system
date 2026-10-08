@@ -56,6 +56,10 @@ urgent for the demo, but worth doing before this goes further than a pilot.
     details) should sit behind it instead of the public count.
   - "Sign out" in the dashboard sidebar just links back to the public home
     page, since there's no session yet to end.
+  - Two write endpoints meant to be team-only aren't actually protected:
+    `PATCH /api/reports/[id]/status` (marking a report resolved) and
+    `POST /api/activities` (logging a restoration activity). Both work for
+    anyone who calls them directly, not just from the dashboard UI.
 
 ## Accessibility
 

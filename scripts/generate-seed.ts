@@ -80,10 +80,10 @@ function render(seed: SeedData): string {
     ),
     insertMany(
       'community_activities',
-      'kind, title, occurred_on, youth_count, households_reached, facilities_count, trees_planted, participants',
+      'kind, title, location, description, occurred_on, youth_count, households_reached, facilities_count, trees_planted, participants, waste_collected_kg, area_restored_m2, photo_urls',
       seed.activities,
       (a) =>
-        `${q(a.kind)}, ${q(a.title)}, ${q(a.occurredOn)}, ${n(a.youthCount)}, ${n(a.householdsReached)}, ${n(a.facilitiesCount)}, ${n(a.treesPlanted)}, ${n(a.participants)}`,
+        `${q(a.kind)}, ${q(a.title)}, ${q(a.location)}, ${q(a.description)}, ${q(a.occurredOn)}, ${n(a.youthCount)}, ${n(a.householdsReached)}, ${n(a.facilitiesCount)}, ${n(a.treesPlanted)}, ${n(a.participants)}, ${n(a.wasteCollectedKg)}, ${n(a.areaRestoredM2)}, ${arr(a.photoUrls)}`,
     ),
     insertMany(
       'stakeholders',

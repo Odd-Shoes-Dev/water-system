@@ -1,7 +1,8 @@
 // In-memory provider used when DATABASE_URL is not set. Data resets when the
 // server restarts, which is fine for a demo.
 import type { DataStore } from '@/lib/data/store'
-import type { NewRiverReport, NewWaitlistEntry, RiverReport, WaitlistEntry } from '@/lib/data/types'
+import type { Activity, NewActivity, NewRiverReport, NewWaitlistEntry, RiverReport, WaitlistEntry } from '@/lib/data/types'
+import { deriveActivityTitle } from '@/lib/services/activities'
 import { buildSeed } from './seed'
 
 export function createDemoStore(): DataStore {
@@ -10,6 +11,7 @@ export function createDemoStore(): DataStore {
   const rainfall = [...seed.rainfall]
   const greywaterReadings = [...seed.greywaterReadings]
   const reports = [...seed.reports]
+  const activities = [...seed.activities]
   const devices = [...seed.devices]
   const waitlist = [...seed.waitlist]
 
@@ -54,9 +56,25 @@ export function createDemoStore(): DataStore {
       reports.push(created)
       return created
     },
+    async updateRiverReportStatus(id, status) {
+      const report = reports.find((r) => r.id === id)
+      if (!report) return null
+      report.status = status
+      return report
+    },
 
     async listActivities() {
-      return seed.activities
+      return activities
+    },
+    async createActivity(activity: NewActivity) {
+      const created: Activity = {
+        ...activity,
+        id: activities.length + 1,
+        title: deriveActivityTitle(activity.kind, activity.location),
+        facilitiesCount: 0,
+      }
+      activities.push(created)
+      return created
     },
     async listStakeholders() {
       return seed.stakeholders

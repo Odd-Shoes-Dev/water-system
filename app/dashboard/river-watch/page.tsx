@@ -1,5 +1,4 @@
-import { MapView } from '@/components/map-view'
-import { ReportsList } from '@/components/reports-list'
+import { RiverWatchTabs } from '@/components/river-watch-tabs'
 import { getDataStore } from '@/lib/data'
 import { REPORT_CATEGORIES } from '@/lib/data/types'
 
@@ -14,10 +13,12 @@ const markerColors: Record<string, string> = {
   restoration: 'hsl(158 55% 38%)',
 }
 
-// View-only: the public Reports & map page has the submission form. This is
-// the team's view of the same reports.
+// View-only reports: the public Reports & map page has the submission form.
+// Restoration activities can be logged from here, there's no public form for
+// those, they're a team action.
 export default async function DashboardRiverWatchPage() {
-  const reports = await getDataStore().listRiverReports()
+  const store = getDataStore()
+  const [reports, activities] = await Promise.all([store.listRiverReports(), store.listActivities()])
 
   const markers = reports.map((report) => ({
     id: report.id,
@@ -31,14 +32,14 @@ export default async function DashboardRiverWatchPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm uppercase tracking-[0.2em] text-accent">River watch</p>
-        <h1 className="mt-2 font-heading text-4xl">River Rwizi reports</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {reports.length} reports, submitted by youth from the public Reports &amp; map page.
-        </p>
+        <p className="text-sm uppercase tracking-[0.2em] text-accent">River Rwizi</p>
+        <h1 className="mt-2 font-heading text-4xl">River watch</h1>
       </div>
-      <MapView markers={markers} center={[-0.61, 30.65]} zoom={13} heightClassName="h-[420px]" />
-      <ReportsList reports={reports.map((report) => ({ ...report, createdAt: report.createdAt.toISOString() }))} />
+      <RiverWatchTabs
+        reports={reports.map((report) => ({ ...report, createdAt: report.createdAt.toISOString() }))}
+        activities={activities}
+        markers={markers}
+      />
     </div>
   )
 }

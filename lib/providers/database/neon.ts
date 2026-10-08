@@ -7,6 +7,7 @@ import type {
   Device,
   GreywaterReading,
   GreywaterUnit,
+  NewActivity,
   NewRiverReport,
   NewWaitlistEntry,
   RainfallReading,
@@ -16,6 +17,7 @@ import type {
   Tank,
   TankReading,
 } from '@/lib/data/types'
+import { deriveActivityTitle } from '@/lib/services/activities'
 
 const BATCH_SIZE = 500
 
@@ -169,23 +171,40 @@ export function createNeonStore(databaseUrl: string): DataStore {
       return mapReport(rows[0])
     },
 
+    async updateRiverReportStatus(id: number, status: RiverReport['status']): Promise<RiverReport | null> {
+      const rows = await sql`
+        update river_reports set status = ${status} where id = ${id}
+        returning id, category, description, location_description, latitude, longitude, photo_urls, reporter_name, status, created_at`
+      return rows[0] ? mapReport(rows[0]) : null
+    },
+
     async listActivities(): Promise<Activity[]> {
       const rows = await sql`
-        select id, kind, title, occurred_on::text as occurred_on, youth_count, households_reached,
-               facilities_count, trees_planted, participants
+        select id, kind, title, location, description, occurred_on::text as occurred_on, youth_count,
+               households_reached, facilities_count, trees_planted, participants, waste_collected_kg,
+               area_restored_m2, photo_urls
         from community_activities
         order by occurred_on desc`
-      return rows.map((r) => ({
-        id: Number(r.id),
-        kind: r.kind,
-        title: r.title,
-        occurredOn: r.occurred_on,
-        youthCount: Number(r.youth_count),
-        householdsReached: Number(r.households_reached),
-        facilitiesCount: Number(r.facilities_count),
-        treesPlanted: Number(r.trees_planted),
-        participants: Number(r.participants),
-      }))
+      return rows.map(mapActivity)
+    },
+
+    async createActivity(activity: NewActivity): Promise<Activity> {
+      const title = deriveActivityTitle(activity.kind, activity.location)
+      const rows = await sql`
+        insert into community_activities (
+          kind, title, location, description, occurred_on, youth_count, households_reached,
+          facilities_count, trees_planted, participants, waste_collected_kg, area_restored_m2, photo_urls
+        )
+        values (
+          ${activity.kind}, ${title}, ${activity.location}, ${activity.description}, ${activity.occurredOn},
+          ${activity.youthCount}, ${activity.householdsReached}, 0, ${activity.treesPlanted},
+          ${activity.participants}, ${activity.wasteCollectedKg}, ${activity.areaRestoredM2},
+          ${activity.photoUrls}::text[]
+        )
+        returning id, kind, title, location, description, occurred_on::text as occurred_on, youth_count,
+                  households_reached, facilities_count, trees_planted, participants, waste_collected_kg,
+                  area_restored_m2, photo_urls`
+      return mapActivity(rows[0])
     },
 
     async listStakeholders(): Promise<Stakeholder[]> {
@@ -247,5 +266,24 @@ function mapReport(r: Record<string, any>): RiverReport {
     reporterName: r.reporter_name ?? null,
     status: r.status,
     createdAt: new Date(r.created_at),
+  }
+}
+
+function mapActivity(r: Record<string, any>): Activity {
+  return {
+    id: Number(r.id),
+    kind: r.kind,
+    title: r.title,
+    location: r.location ?? '',
+    description: r.description ?? '',
+    occurredOn: r.occurred_on,
+    youthCount: Number(r.youth_count),
+    householdsReached: Number(r.households_reached),
+    facilitiesCount: Number(r.facilities_count),
+    treesPlanted: Number(r.trees_planted),
+    participants: Number(r.participants),
+    wasteCollectedKg: Number(r.waste_collected_kg ?? 0),
+    areaRestoredM2: Number(r.area_restored_m2 ?? 0),
+    photoUrls: r.photo_urls ?? [],
   }
 }

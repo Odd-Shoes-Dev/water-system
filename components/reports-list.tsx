@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { ImageLightbox } from './image-lightbox'
 import { MapView } from './map-view'
 import { Modal } from './modal'
@@ -27,19 +28,53 @@ const statusStyles: Record<string, string> = {
   resolved: 'bg-success/15 text-success',
 }
 
-export function ReportsList({ reports }: { reports: ReportListItem[] }) {
-  const [selected, setSelected] = useState<ReportListItem | null>(null)
+const formatDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { dateStyle: 'medium' })
+
+export function ReportsList({
+  reports,
+  allowStatusUpdate = false,
+}: {
+  reports: ReportListItem[]
+  // Dashboard-only: lets the team mark a report resolved. See
+  // docs/known-issues.md, this isn't access-controlled yet either.
+  allowStatusUpdate?: boolean
+}) {
+  const router = useRouter()
+  const [items, setItems] = useState(reports)
+  // Resync when the server sends fresh data, for example after router.refresh().
+  useEffect(() => setItems(reports), [reports])
+  const [selectedId, setSelectedId] = useState<number | null>(null)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+  const [resolving, setResolving] = useState(false)
+
+  const selected = items.find((r) => r.id === selectedId) ?? null
 
   function openReport(report: ReportListItem) {
-    setSelected(report)
+    setSelectedId(report.id)
     setLightboxIndex(null)
+  }
+
+  async function markResolved(id: number) {
+    setResolving(true)
+    try {
+      const response = await fetch(`/api/reports/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'resolved' }),
+      })
+      if (response.ok) {
+        setItems((current) => current.map((r) => (r.id === id ? { ...r, status: 'resolved' } : r)))
+        router.refresh()
+      }
+    } finally {
+      setResolving(false)
+    }
   }
 
   return (
     <>
       <ul className="divide-y divide-border rounded-lg border border-border bg-card">
-        {reports.map((report) => (
+        {items.map((report) => (
           <li key={report.id}>
             <button
               type="button"
@@ -69,6 +104,9 @@ export function ReportsList({ reports }: { reports: ReportListItem[] }) {
                   <p className="font-medium">{REPORT_CATEGORIES[report.category]}</p>
                   <p className="text-sm text-muted-foreground">{report.locationDescription}</p>
                   {report.description && <p className="text-sm text-muted-foreground">{report.description}</p>}
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {report.reporterName ?? 'Anonymous'} · {formatDate(report.createdAt)}
+                  </p>
                 </div>
               </div>
               <span className={`shrink-0 rounded-full px-3 py-1 text-xs capitalize ${statusStyles[report.status] ?? 'bg-muted'}`}>
@@ -81,7 +119,7 @@ export function ReportsList({ reports }: { reports: ReportListItem[] }) {
 
       {selected && (
         <Modal
-          onClose={() => setSelected(null)}
+          onClose={() => setSelectedId(null)}
           titleId="report-modal-title"
           disableEscape={lightboxIndex !== null}
         >
@@ -91,7 +129,7 @@ export function ReportsList({ reports }: { reports: ReportListItem[] }) {
             </h3>
             <button
               type="button"
-              onClick={() => setSelected(null)}
+              onClick={() => setSelectedId(null)}
               aria-label="Close"
               className="shrink-0 rounded-full p-1 text-xl leading-none text-muted-foreground transition-colors hover:text-foreground"
             >
@@ -99,9 +137,21 @@ export function ReportsList({ reports }: { reports: ReportListItem[] }) {
             </button>
           </div>
 
-          <span className={`mt-2 inline-block rounded-full px-3 py-1 text-xs capitalize ${statusStyles[selected.status] ?? 'bg-muted'}`}>
-            {selected.status}
-          </span>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <span className={`inline-block rounded-full px-3 py-1 text-xs capitalize ${statusStyles[selected.status] ?? 'bg-muted'}`}>
+              {selected.status}
+            </span>
+            {allowStatusUpdate && selected.status !== 'resolved' && (
+              <button
+                type="button"
+                onClick={() => markResolved(selected.id)}
+                disabled={resolving}
+                className="text-xs font-medium text-accent underline disabled:opacity-60"
+              >
+                {resolving ? 'Marking resolved…' : 'Mark resolved'}
+              </button>
+            )}
+          </div>
 
           {selected.photoUrls.length > 0 && (
             <div className="mt-4 grid grid-cols-3 gap-2">

@@ -31,6 +31,12 @@ const PURPOSES = {
     allowedTypes: ['audio/mpeg', 'audio/mp4', 'audio/wav', 'audio/webm', 'audio/ogg', 'audio/x-m4a', 'audio/aac'],
     label: 'Audio (keep voice notes short, under about a minute)',
   },
+  'activity-photo': {
+    folder: 'activities',
+    maxBytes: MAX_UPLOAD_BYTES,
+    allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+    label: 'Photo',
+  },
 } as const
 
 type Purpose = keyof typeof PURPOSES

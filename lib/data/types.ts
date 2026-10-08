@@ -84,16 +84,46 @@ export type NewRiverReport = {
 
 export type ActivityKind = 'training' | 'clean_up' | 'restoration' | 'household_adoption'
 
+export const ACTIVITY_KIND_LABELS: Record<ActivityKind, string> = {
+  clean_up: 'River clean-up',
+  restoration: 'Restoration / tree planting',
+  training: 'Training / sensitisation',
+  household_adoption: 'Household adoption',
+}
+
+export const MAX_ACTIVITY_PHOTOS = 10
+
 export type Activity = {
   id: number
   kind: ActivityKind
   title: string
+  location: string
+  description: string
   occurredOn: string
   youthCount: number
   householdsReached: number
   facilitiesCount: number
   treesPlanted: number
   participants: number
+  wasteCollectedKg: number
+  areaRestoredM2: number
+  photoUrls: string[]
+}
+
+// What the "Log activity" form submits. The title is derived server-side
+// from the kind and location, so the form doesn't need to ask for one.
+export type NewActivity = {
+  kind: ActivityKind
+  location: string
+  description: string
+  occurredOn: string
+  youthCount: number
+  householdsReached: number
+  treesPlanted: number
+  participants: number
+  wasteCollectedKg: number
+  areaRestoredM2: number
+  photoUrls: string[]
 }
 
 export type Stakeholder = {
