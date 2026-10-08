@@ -14,7 +14,7 @@ export function WaitlistSection({ initialCount }: { initialCount: number }) {
       <p className="text-muted-foreground">
         {count.toLocaleString('en-US')} {count === 1 ? 'person has' : 'people have'} joined so far.
       </p>
-      <div className="max-w-xl">
+      <div className="mx-auto max-w-xl">
         <WaitlistForm onJoined={() => setCount((current) => current + 1)} />
       </div>
     </div>

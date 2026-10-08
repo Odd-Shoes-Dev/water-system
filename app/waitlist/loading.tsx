@@ -6,7 +6,7 @@ export default function Loading() {
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-10" aria-busy="true" aria-label="Loading the waitlist">
       <SkeletonHeader />
       <Skeleton className="h-4 w-48" />
-      <div className="max-w-xl space-y-3 rounded-lg border border-border bg-card p-5">
+      <div className="mx-auto max-w-xl space-y-3 rounded-lg border border-border bg-card p-5">
         <Skeleton className="h-10 w-full" />
         <Skeleton className="h-10 w-full" />
         <Skeleton className="h-10 w-full" />
