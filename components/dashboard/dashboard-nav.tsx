@@ -58,9 +58,9 @@ export function DashboardNav() {
         >
           <MenuIcon className="h-5 w-5" />
         </button>
-        <span className="font-heading text-lg">
+        <Link href="/" className="font-heading text-lg">
           Rain<span className="italic text-accent">&amp;</span>Renew
-        </span>
+        </Link>
       </header>
 
       {open && (
