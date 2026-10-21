@@ -12,8 +12,9 @@ Migrations are plain SQL files. You run them yourself; the app never changes the
 | `migrations/0004_multiple_report_photos.sql` | Lets a report carry up to 10 photos instead of one. |
 | `migrations/0005_add_waitlist_email.sql` | Adds an optional email to waitlist entries. |
 | `migrations/0006_add_activity_details.sql` | Adds location, description, waste collected and area restored to activities, so each one can carry its own story instead of only totals. |
+| `migrations/0007_add_team_members.sql` | Adds the team_members table, for dashboard sign-in. |
 
-Run these in order, `0001` through `0006`. Each one only depends on the ones
+Run these in order, `0001` through `0007`. Each one only depends on the ones
 before it, so running them in file order is always safe.
 
 There's no seed-data migration here, by design: seed data needs the *final*
@@ -21,14 +22,24 @@ schema, so it can never be safely numbered into the middle of this sequence,
 it would depend on files that haven't run yet. See "Adding demo data" below
 if you want some.
 
-All six files are safe to re-run; they skip anything that already exists.
+All seven files are safe to re-run; they skip anything that already exists.
+
+## Dashboard sign-in
+
+After running `0007_add_team_members.sql`, create your own login with:
+
+```bash
+npm run team:add -- --email you@example.org --name "Your Name" --password "a strong password"
+```
+
+Nobody self-registers through the UI; accounts are only ever added this way.
 
 ## Adding demo data
 
 The database starts empty. If you want simulated demo data (30 days of tank,
 rainfall and greywater readings, sample reports, activities, stakeholders,
-waitlist entries and the demo device), generate it after running all six
-migrations above:
+waitlist entries, the demo device and a demo team member), generate it after
+running all seven migrations above:
 
 ```bash
 npm run db:generate-seed

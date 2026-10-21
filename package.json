@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "db:generate-seed": "tsx scripts/generate-seed.ts",
-    "simulate:device": "tsx scripts/simulate-device.ts"
+    "simulate:device": "tsx scripts/simulate-device.ts",
+    "team:add": "tsx --env-file=.env.local scripts/create-team-member.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",

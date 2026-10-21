@@ -9,6 +9,7 @@ import type {
   GreywaterUnit,
   NewActivity,
   NewRiverReport,
+  NewTeamMember,
   NewWaitlistEntry,
   RainfallReading,
   ReportCategory,
@@ -16,6 +17,7 @@ import type {
   Stakeholder,
   Tank,
   TankReading,
+  TeamMember,
 } from '@/lib/data/types'
 import { deriveActivityTitle } from '@/lib/services/activities'
 
@@ -250,6 +252,36 @@ export function createNeonStore(databaseUrl: string): DataStore {
     async countWaitlistEntries(): Promise<number> {
       const rows = await sql`select count(*)::int as count from waitlist_entries`
       return Number(rows[0]?.count ?? 0)
+    },
+
+    async findTeamMemberByEmail(email: string): Promise<TeamMember | null> {
+      const rows = await sql`
+        select id, email, password_hash, name, created_at from team_members
+        where lower(email) = lower(${email}) limit 1`
+      const row = rows[0]
+      if (!row) return null
+      return {
+        id: Number(row.id),
+        email: row.email,
+        passwordHash: row.password_hash,
+        name: row.name,
+        createdAt: new Date(row.created_at),
+      }
+    },
+
+    async createTeamMember(member: NewTeamMember): Promise<TeamMember> {
+      const rows = await sql`
+        insert into team_members (email, password_hash, name)
+        values (${member.email}, ${member.passwordHash}, ${member.name})
+        returning id, email, password_hash, name, created_at`
+      const row = rows[0]
+      return {
+        id: Number(row.id),
+        email: row.email,
+        passwordHash: row.password_hash,
+        name: row.name,
+        createdAt: new Date(row.created_at),
+      }
     },
   }
 }

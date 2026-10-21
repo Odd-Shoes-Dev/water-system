@@ -165,3 +165,20 @@ export type NewWaitlistEntry = {
   photoUrl: string | null
   audioUrl: string | null
 }
+
+// A person who can sign in to the dashboard. Nobody self-registers: an admin
+// adds each row via `npm run team:add`. passwordHash is never the raw
+// password, see lib/services/auth.ts.
+export type TeamMember = {
+  id: number
+  email: string
+  passwordHash: string
+  name: string
+  createdAt: Date
+}
+
+export type NewTeamMember = {
+  email: string
+  passwordHash: string
+  name: string
+}

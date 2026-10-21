@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import {
   BellIcon,
@@ -15,6 +15,7 @@ import {
   RecycleIcon,
   WavesIcon,
 } from '@/components/icons'
+import type { Session } from '@/lib/services/session'
 
 const links = [
   { href: '/dashboard', label: 'Overview', Icon: GridIcon },
@@ -26,9 +27,21 @@ const links = [
   { href: '/dashboard/impact', label: 'Impact', Icon: ChartIcon },
 ]
 
-export function DashboardNav() {
+export function DashboardNav({ session }: { session: Session }) {
   const pathname = usePathname()
+  const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
+
+  async function handleSignOut() {
+    setSigningOut(true)
+    try {
+      await fetch('/api/logout', { method: 'POST' })
+    } finally {
+      router.push('/')
+      router.refresh()
+    }
+  }
 
   // Close the drawer whenever navigation actually happens, as a backup to
   // closing it on click, and on Escape while it's open.
@@ -116,16 +129,17 @@ export function DashboardNav() {
         </nav>
 
         <div className="border-t border-sidebar-border pt-4">
-          {/* No real session yet: see docs/known-issues.md for the planned Google sign-in + allowlist. */}
-          <p className="px-2 text-sm font-medium text-white">Team member</p>
-          <p className="px-2 text-xs text-sidebar-foreground/60">Demo access</p>
-          <Link
-            href="/"
-            className="mt-3 flex items-center gap-2 rounded-md px-2 py-2 text-sm text-sidebar-foreground/70 transition-colors hover:text-sidebar-foreground"
+          <p className="truncate px-2 text-sm font-medium text-white">{session.name}</p>
+          <p className="truncate px-2 text-xs text-sidebar-foreground/60">{session.email}</p>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            disabled={signingOut}
+            className="mt-3 flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-sidebar-foreground/70 transition-colors hover:text-sidebar-foreground disabled:opacity-60"
           >
             <LogOutIcon className="h-4 w-4" />
-            Sign out
-          </Link>
+            {signingOut ? 'Signing out…' : 'Sign out'}
+          </button>
         </div>
       </aside>
     </>

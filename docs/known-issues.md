@@ -29,37 +29,42 @@ urgent for the demo, but worth doing before this goes further than a pilot.
 
 ## Access control
 
-- **No real login yet.** The "Log in" link and `/login` currently redirect
-  straight to `/dashboard` with no authentication at all. That means
-  `/dashboard` (and everything under it: tanks, map, alerts, recycling,
-  river watch, impact) is reachable by anyone who opens that URL directly,
-  not only through the button.
+- **Real login exists now: email + password.** `/login` checks credentials
+  against a `team_members` table (`neon-database/migrations/0007_add_team_members.sql`),
+  passwords are salted-scrypt hashed (`lib/services/auth.ts`), and sessions
+  are a signed, stateless cookie verified by `proxy.ts` on every
+  `/dashboard/*` request. Nobody self-registers — accounts are created with
+  `npm run team:add` (needs `DATABASE_URL`; the in-memory demo store seeds
+  one fixed demo account instead, see `DEMO_TEAM_MEMBER_EMAIL`/`PASSWORD` in
+  `lib/services/auth.ts`).
 
-  The planned replacement, once there's a reason to build it (real team
-  members, not just this demo):
-  - Sign in with **Google**, so no passwords are ever stored.
+  **Google sign-in is still the longer-term plan**, once there's a reason to
+  build it (more team members than one or two, or a wish to avoid managing
+  passwords at all):
+  - Sign in with **Google**, so no passwords are stored at all.
   - After Google confirms the person's identity, check their email against
-    an allowlist kept in the database (a small `team_members`-style table).
-    Not on the list → access denied with a clear message. On it → let them
-    in. Nobody self-registers; an admin adds the email first.
+    an allowlist (the `team_members` table could gain a `google_sub` column,
+    or it's replaced outright). Not on the list → access denied with a clear
+    message. On it → let them in.
   - This needs a Google Cloud OAuth app to be created first (only the
     project owner can do this), with its Client ID and Secret added as
     environment variables, the same pattern as the ImageKit keys.
 
-  Until that's built:
+  Still true even with real login in place:
   - The reporter's name on a submitted report is visible to anyone who
-    opens its details modal.
-  - Anyone can open a report's full details ("admin-style" click-through),
-    not just a trusted viewer.
-  - The waitlist form only returns a count publicly (by design), but once
-    real login exists, an actual admin view of entries (with contact
-    details) should sit behind it instead of the public count.
-  - "Sign out" in the dashboard sidebar just links back to the public home
-    page, since there's no session yet to end.
-  - Two write endpoints meant to be team-only aren't actually protected:
+    opens its details modal — now at least that requires being signed in.
+  - Anyone signed in can open a report's full details ("admin-style"
+    click-through); there's no finer-grained role system yet.
+  - The waitlist form only returns a count publicly (by design), but a real
+    admin view of entries (with contact details) should sit behind login
+    instead of the public count — not built yet.
+  - Two write endpoints meant to be team-only aren't actually protected by
+    `proxy.ts` (it only covers page routes under `/dashboard`):
     `PATCH /api/reports/[id]/status` (marking a report resolved) and
-    `POST /api/activities` (logging a restoration activity). Both work for
-    anyone who calls them directly, not just from the dashboard UI.
+    `POST /api/activities` (logging a restoration activity). Both still work
+    for anyone who calls them directly, not just from the dashboard UI.
+  - No password reset flow, no rate limiting on login attempts, and no
+    CSRF token beyond the cookie's `SameSite=Lax`.
 
 ## Accessibility
 

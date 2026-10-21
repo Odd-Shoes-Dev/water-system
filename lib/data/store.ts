@@ -5,12 +5,14 @@ import type {
   GreywaterUnit,
   NewActivity,
   NewRiverReport,
+  NewTeamMember,
   NewWaitlistEntry,
   RainfallReading,
   RiverReport,
   Stakeholder,
   Tank,
   TankReading,
+  TeamMember,
 } from './types'
 
 // The only data interface the app uses. Each provider in lib/providers
@@ -44,4 +46,7 @@ export interface DataStore {
   // listed back out, since this is personal data.
   createWaitlistEntry(entry: NewWaitlistEntry): Promise<void>
   countWaitlistEntries(): Promise<number>
+
+  findTeamMemberByEmail(email: string): Promise<TeamMember | null>
+  createTeamMember(member: NewTeamMember): Promise<TeamMember>
 }

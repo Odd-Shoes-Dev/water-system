@@ -11,6 +11,7 @@ import type {
   Stakeholder,
   Tank,
   TankReading,
+  TeamMember,
   WaitlistEntry,
 } from '@/lib/data/types'
 import {
@@ -19,6 +20,12 @@ import {
   simulateRainfall,
   simulateTankReadings,
 } from '@/lib/providers/iot/simulator'
+import {
+  DEMO_TEAM_MEMBER_EMAIL,
+  DEMO_TEAM_MEMBER_NAME,
+  DEMO_TEAM_MEMBER_PASSWORD,
+  hashPasswordSync,
+} from '@/lib/services/auth'
 import { hashDeviceKey, DEMO_DEVICE_ID, DEMO_DEVICE_KEY, DEMO_DEVICE_TANK_ID } from '@/lib/services/devices'
 import {
   SITES,
@@ -44,6 +51,7 @@ export type SeedData = {
   stakeholders: Stakeholder[]
   devices: Device[]
   waitlist: WaitlistEntry[]
+  teamMembers: TeamMember[]
 }
 
 export function buildSeed(): SeedData {
@@ -94,6 +102,16 @@ export function buildSeed(): SeedData {
     },
   ]
 
+  const teamMembers: TeamMember[] = [
+    {
+      id: 1,
+      email: DEMO_TEAM_MEMBER_EMAIL,
+      passwordHash: hashPasswordSync(DEMO_TEAM_MEMBER_PASSWORD),
+      name: DEMO_TEAM_MEMBER_NAME,
+      createdAt: SEED_START,
+    },
+  ]
+
   return {
     tanks: sampleTanks,
     tankReadings,
@@ -105,5 +123,6 @@ export function buildSeed(): SeedData {
     stakeholders,
     devices,
     waitlist,
+    teamMembers,
   }
 }

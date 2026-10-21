@@ -104,6 +104,12 @@ function render(seed: SeedData): string {
       seed.waitlist,
       (w) => `${q(w.name)}, ${q(w.place)}, ${q(w.phone)}, ${q(w.email)}, ${q(w.photoUrl)}, ${q(w.audioUrl)}, ${ts(w.createdAt)}`,
     ),
+    insertMany(
+      'team_members',
+      'email, password_hash, name, created_at',
+      seed.teamMembers,
+      (m) => `${q(m.email)}, ${q(m.passwordHash)}, ${q(m.name)}, ${ts(m.createdAt)}`,
+    ),
   ]
   return parts.join('\n')
 }

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getDataStore } from '@/lib/data'
 import { getImpactSummary } from '@/lib/services/impact'
+import { getSession } from '@/lib/services/session'
 import { getStreamsOverview } from '@/lib/services/streams'
 
 export const dynamic = 'force-dynamic'
@@ -9,7 +10,11 @@ const number = (value: number) => value.toLocaleString('en-US')
 
 export default async function DashboardOverviewPage() {
   const store = getDataStore()
-  const [overview, impact] = await Promise.all([getStreamsOverview(store), getImpactSummary(store)])
+  const [overview, impact, session] = await Promise.all([
+    getStreamsOverview(store),
+    getImpactSummary(store),
+    getSession(),
+  ])
 
   const tanksWithReadings = overview.tanks.filter((t) => t.latestLevelPercent !== null)
   const averageLevel = tanksWithReadings.length
@@ -26,10 +31,7 @@ export default async function DashboardOverviewPage() {
     <div className="space-y-8">
       <div>
         <p className="text-sm uppercase tracking-[0.2em] text-accent">Overview</p>
-        {/* "Team member" matches the sidebar footer's placeholder; both become
-            the real signed-in name once Google sign-in + the allowlist land
-            (see docs/known-issues.md). */}
-        <h1 className="mt-2 font-heading text-5xl">Hello, Team member</h1>
+        <h1 className="mt-2 font-heading text-5xl">Hello, {session?.name ?? 'Team member'}</h1>
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
