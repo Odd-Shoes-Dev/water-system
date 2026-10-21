@@ -126,6 +126,26 @@
   }
 }
 
+/* Scroll-reveal for the landing page's story sections (components/landing/*). */
+.story-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.story-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* A slim scrollbar for scrollable panels such as the report details modal. */
 .thin-scrollbar {
   scrollbar-width: thin;

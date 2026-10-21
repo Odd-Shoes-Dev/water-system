@@ -7,8 +7,8 @@ import { usePathname } from 'next/navigation'
 // purpose: they're the start of a "logged in" section, not public pages,
 // and stay reachable by direct link until that split is built properly.
 const links = [
-  { href: '/#features', label: 'Features' },
-  { href: '/#how-it-works', label: 'How it works' },
+  { href: '/#pilot', label: 'The pilot' },
+  { href: '/#river', label: 'The river' },
   { href: '/reports', label: 'Reports & map' },
   { href: '/waitlist', label: 'Waitlist' },
 ]

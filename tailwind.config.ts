@@ -34,6 +34,22 @@ const config: Config = {
           border: token('sidebar-border'),
           ring: token('sidebar-ring'),
         },
+        // Fixed narrative palette for the public landing page's story sections
+        // only (see rain_and_renew_visual_landing_page.html). Not theme-aware
+        // on purpose, and never used by the dashboard or other app chrome.
+        story: {
+          night: '#060e1b',
+          predawn: '#0c2336',
+          sky: '#b5dcdb',
+          day: '#f1f7f5',
+          deep: '#0a3340',
+          river: '#1b6b7a',
+          leaf: '#3f7a3c',
+          sun: '#f0b83a',
+          ink: '#12282e',
+          muted: '#4c6168',
+          mist: '#e3efec',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
