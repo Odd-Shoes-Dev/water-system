@@ -17,7 +17,7 @@ export function JourneySection() {
   const label = finished ? 'Press to try again' : holding ? 'Keep holding' : 'Press and hold'
 
   return (
-    <section className="bg-story-night py-24 text-story-mist">
+    <section className="bg-story-night py-14 text-story-mist sm:py-24">
       <div
         ref={ref}
         className={`story-reveal mx-auto max-w-6xl px-4 ${visible ? 'is-visible' : ''}`}

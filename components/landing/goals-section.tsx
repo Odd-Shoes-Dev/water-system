@@ -12,7 +12,7 @@ export function GoalsSection() {
   const [showGoal, setShowGoal] = useState(false)
 
   return (
-    <section className="bg-story-day py-24 text-story-ink">
+    <section className="bg-story-day py-14 text-story-ink sm:py-24">
       <div ref={ref} className={`story-reveal mx-auto max-w-6xl px-4 ${visible ? 'is-visible' : ''}`}>
         <p className="font-heading text-sm uppercase tracking-[0.2em] text-story-river">06 / The next chapter</p>
         <h2 className="mt-3 max-w-xl font-heading text-5xl">Ten households is a beginning.</h2>

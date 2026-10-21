@@ -114,11 +114,16 @@ export function usePressHold(durationMs = 7000, decayPerTick = 0.03) {
   const begin = useCallback(() => {
     const s = stateRef.current
     if (s.holding) return
+    // A completed hold leaves progress at 1 and stops decaying it (the ring
+    // stays full while showing "Press to try again"). Starting again should
+    // restart from empty, not resume from an already-full ring.
+    if (s.finished) s.progress = 0
     s.holding = true
     s.finished = false
     s.start = performance.now() - s.progress * durationMs
     setHolding(true)
     setFinished(false)
+    setProgress(s.progress)
     cancelAnimationFrame(rafRef.current)
     rafRef.current = requestAnimationFrame(tick)
   }, [durationMs, tick])

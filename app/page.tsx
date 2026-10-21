@@ -74,7 +74,7 @@ export default function HomePage() {
       <GetInvolvedSection />
 
       {/* Closing call to action */}
-      <section className="bg-story-night py-24 text-center text-story-mist">
+      <section className="bg-story-night py-14 text-center text-story-mist sm:py-24">
         <div className="mx-auto max-w-2xl px-4">
           <h2 className="font-heading text-5xl text-white">The next drop can make a difference.</h2>
           <p className="mt-5 text-lg text-story-mist/80">

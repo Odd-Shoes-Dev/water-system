@@ -2,7 +2,7 @@ import Image from 'next/image'
 
 export function FounderSection() {
   return (
-    <section className="bg-story-mist py-24 text-story-ink">
+    <section className="bg-story-mist py-14 text-story-ink sm:py-24">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 lg:grid-cols-[0.75fr_1.25fr] lg:items-center">
         <div className="relative min-h-[380px] overflow-hidden rounded-3xl bg-story-predawn shadow-xl sm:min-h-[460px]">
           <Image

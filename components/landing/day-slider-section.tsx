@@ -28,7 +28,7 @@ export function DaySliderSection() {
   const t = value / 100
 
   return (
-    <section className="bg-story-day py-24 text-story-ink">
+    <section className="bg-story-day py-14 text-story-ink sm:py-24">
       <div ref={ref} className={`story-reveal mx-auto max-w-6xl px-4 ${visible ? 'is-visible' : ''}`}>
         <p className="font-heading text-sm uppercase tracking-[0.2em] text-story-river">03 / What changes</p>
         <h2 className="mt-3 max-w-xl font-heading text-5xl">Water closer. A day with more room.</h2>
@@ -40,7 +40,7 @@ export function DaySliderSection() {
           {SEGMENTS.map((segment) => (
             <div
               key={segment.key}
-              className={`flex items-center justify-center overflow-hidden whitespace-nowrap px-2 text-xs font-medium text-white transition-[flex-grow] duration-150 ${segment.color}`}
+              className={`flex items-center justify-center overflow-hidden whitespace-nowrap px-2 text-xs font-medium text-white ${segment.color}`}
               style={{ flexGrow: FROM[segment.key] + (TO[segment.key] - FROM[segment.key]) * t, flexBasis: 0 }}
             >
               {segment.key === 'water' ? (t > 0.85 ? 'Water' : 'Fetching water') : segment.label}

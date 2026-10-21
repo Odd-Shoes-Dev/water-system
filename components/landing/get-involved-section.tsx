@@ -32,7 +32,7 @@ const FAQS = [
 
 export function GetInvolvedSection() {
   return (
-    <section id="get-involved" className="scroll-mt-20 bg-story-deep py-24 text-story-mist">
+    <section id="get-involved" className="scroll-mt-20 bg-story-deep py-14 text-story-mist sm:py-24">
       <div className="mx-auto max-w-6xl px-4">
         <p className="font-heading text-sm uppercase tracking-[0.2em] text-story-sun">08 / Get involved</p>
         <h2 className="mt-3 max-w-xl font-heading text-5xl text-white">Help the next drop do more.</h2>
