@@ -12,7 +12,7 @@ const SEGMENTS: { key: keyof typeof FROM; label: string; color: string }[] = [
   { key: 'water', label: 'Fetching water', color: 'bg-story-river' },
   { key: 'school', label: 'School', color: 'bg-story-deep' },
   { key: 'study', label: 'Study', color: 'bg-story-leaf' },
-  { key: 'rest', label: 'Rest & family', color: 'bg-story-sun' },
+  { key: 'rest', label: 'Rest', color: 'bg-story-sun' },
 ]
 
 function messageFor(t: number) {
@@ -36,11 +36,11 @@ export function DaySliderSection() {
           Drag the slider and watch what changes in a girl&apos;s day.
         </p>
 
-        <div className="mt-10 flex h-14 w-full overflow-hidden rounded-full" aria-hidden="true">
+        <div className="mt-10 flex h-9 w-full overflow-hidden rounded-full" aria-hidden="true">
           {SEGMENTS.map((segment) => (
             <div
               key={segment.key}
-              className={`flex items-center justify-center overflow-hidden whitespace-nowrap px-2 text-xs font-medium text-white ${segment.color}`}
+              className={`flex items-center justify-center overflow-hidden whitespace-nowrap px-1 text-[10px] font-medium text-white sm:px-2 sm:text-xs ${segment.color}`}
               style={{ flexGrow: FROM[segment.key] + (TO[segment.key] - FROM[segment.key]) * t, flexBasis: 0 }}
             >
               {segment.key === 'water' ? (t > 0.85 ? 'Water' : 'Fetching water') : segment.label}
