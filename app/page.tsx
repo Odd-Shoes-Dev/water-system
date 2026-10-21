@@ -25,8 +25,8 @@ export default function HomePage() {
       {/* Hero: full-bleed, breaks out of the usual page width on purpose. */}
       <section className="relative overflow-hidden bg-story-night">
         <div className="absolute inset-0">
-          <Image src="/hero-image.png" alt="" fill priority sizes="100vw" className="object-cover opacity-40" />
-          <div className="absolute inset-0 bg-gradient-to-b from-story-night/90 via-story-night/80 to-story-night" />
+          <Image src="/hero-image.png" alt="" fill priority sizes="100vw" className="object-cover opacity-70" />
+          <div className="absolute inset-0 bg-gradient-to-b from-story-night/60 via-story-night/45 to-story-night/80" />
         </div>
         <div className="relative">
           <NavContent transparent />
