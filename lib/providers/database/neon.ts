@@ -5,10 +5,14 @@ import type { DataStore } from '@/lib/data/store'
 import type {
   Activity,
   Device,
+  EditRiverReport,
   GreywaterReading,
+  GreywaterReadingWithId,
   GreywaterUnit,
   NewActivity,
+  NewGreywaterUnit,
   NewRiverReport,
+  NewTank,
   NewTeamMember,
   NewWaitlistEntry,
   RainfallReading,
@@ -20,6 +24,7 @@ import type {
   TeamMember,
 } from '@/lib/data/types'
 import { deriveActivityTitle } from '@/lib/services/activities'
+import { slugId } from '@/lib/services/slug'
 
 const BATCH_SIZE = 500
 
@@ -39,6 +44,7 @@ export function createNeonStore(databaseUrl: string): DataStore {
       const rows = await sql`
         select id, name, site, latitude, longitude, capacity_litres, roof_area_m2
         from tanks
+        where deleted_at is null
         order by name`
       return rows.map((r) => ({
         id: r.id,
@@ -49,6 +55,29 @@ export function createNeonStore(databaseUrl: string): DataStore {
         capacityLitres: Number(r.capacity_litres),
         roofAreaM2: Number(r.roof_area_m2),
       }))
+    },
+
+    async createTank(tank: NewTank): Promise<Tank> {
+      const id = slugId('tank', tank.name)
+      await sql`
+        insert into tanks (id, name, site, latitude, longitude, capacity_litres, roof_area_m2)
+        values (${id}, ${tank.name}, ${tank.site}, ${tank.latitude}, ${tank.longitude},
+                ${tank.capacityLitres}, ${tank.roofAreaM2})`
+      return { ...tank, id }
+    },
+
+    async updateTank(id: string, tank: NewTank): Promise<Tank | null> {
+      const rows = await sql`
+        update tanks set name = ${tank.name}, site = ${tank.site}, latitude = ${tank.latitude},
+          longitude = ${tank.longitude}, capacity_litres = ${tank.capacityLitres},
+          roof_area_m2 = ${tank.roofAreaM2}
+        where id = ${id} and deleted_at is null
+        returning id`
+      return rows[0] ? { ...tank, id } : null
+    },
+
+    async deleteTank(id: string): Promise<void> {
+      await sql`update tanks set deleted_at = now() where id = ${id}`
     },
 
     async listTankReadings(): Promise<TankReading[]> {
@@ -110,7 +139,10 @@ export function createNeonStore(databaseUrl: string): DataStore {
     },
 
     async listGreywaterUnits(): Promise<GreywaterUnit[]> {
-      const rows = await sql`select id, name, site, status, latitude, longitude from greywater_units order by name`
+      const rows = await sql`
+        select id, name, site, status, latitude, longitude from greywater_units
+        where deleted_at is null
+        order by name`
       return rows.map((r) => ({
         id: r.id,
         name: r.name,
@@ -121,12 +153,34 @@ export function createNeonStore(databaseUrl: string): DataStore {
       }))
     },
 
-    async listGreywaterReadings(): Promise<GreywaterReading[]> {
+    async createGreywaterUnit(unit: NewGreywaterUnit): Promise<GreywaterUnit> {
+      const id = slugId('greywater', unit.name)
+      await sql`
+        insert into greywater_units (id, name, site, status, latitude, longitude)
+        values (${id}, ${unit.name}, ${unit.site}, 'ok', ${unit.latitude}, ${unit.longitude})`
+      return { ...unit, id, status: 'ok' }
+    },
+
+    async updateGreywaterUnit(id: string, unit: NewGreywaterUnit): Promise<GreywaterUnit | null> {
       const rows = await sql`
-        select unit_id, recorded_at, litres_collected, litres_filtered, litres_reused, filter_pressure_kpa
+        update greywater_units set name = ${unit.name}, site = ${unit.site},
+          latitude = ${unit.latitude}, longitude = ${unit.longitude}
+        where id = ${id} and deleted_at is null
+        returning status`
+      return rows[0] ? { ...unit, id, status: rows[0].status } : null
+    },
+
+    async deleteGreywaterUnit(id: string): Promise<void> {
+      await sql`update greywater_units set deleted_at = now() where id = ${id}`
+    },
+
+    async listGreywaterReadings(): Promise<GreywaterReadingWithId[]> {
+      const rows = await sql`
+        select id, unit_id, recorded_at, litres_collected, litres_filtered, litres_reused, filter_pressure_kpa
         from greywater_readings
         order by recorded_at`
       return rows.map((r) => ({
+        id: Number(r.id),
         unitId: r.unit_id,
         recordedAt: new Date(r.recorded_at),
         litresCollected: Number(r.litres_collected),
@@ -156,6 +210,32 @@ export function createNeonStore(databaseUrl: string): DataStore {
       }
     },
 
+    async updateGreywaterReading(
+      id: number,
+      patch: Pick<GreywaterReading, 'litresCollected' | 'litresFiltered' | 'litresReused'>,
+    ): Promise<GreywaterReadingWithId | null> {
+      const rows = await sql`
+        update greywater_readings set litres_collected = ${patch.litresCollected},
+          litres_filtered = ${patch.litresFiltered}, litres_reused = ${patch.litresReused}
+        where id = ${id}
+        returning id, unit_id, recorded_at, litres_collected, litres_filtered, litres_reused, filter_pressure_kpa`
+      const row = rows[0]
+      if (!row) return null
+      return {
+        id: Number(row.id),
+        unitId: row.unit_id,
+        recordedAt: new Date(row.recorded_at),
+        litresCollected: Number(row.litres_collected),
+        litresFiltered: Number(row.litres_filtered),
+        litresReused: Number(row.litres_reused),
+        filterPressureKpa: row.filter_pressure_kpa === null ? null : Number(row.filter_pressure_kpa),
+      }
+    },
+
+    async deleteGreywaterReading(id: number): Promise<void> {
+      await sql`delete from greywater_readings where id = ${id}`
+    },
+
     async listRiverReports(): Promise<RiverReport[]> {
       const rows = await sql`
         select id, category, description, location_description, latitude, longitude, photo_urls, reporter_name, status, created_at
@@ -178,6 +258,19 @@ export function createNeonStore(databaseUrl: string): DataStore {
         update river_reports set status = ${status} where id = ${id}
         returning id, category, description, location_description, latitude, longitude, photo_urls, reporter_name, status, created_at`
       return rows[0] ? mapReport(rows[0]) : null
+    },
+
+    async updateRiverReport(id: number, patch: EditRiverReport): Promise<RiverReport | null> {
+      const rows = await sql`
+        update river_reports set category = ${patch.category}, description = ${patch.description},
+          location_description = ${patch.locationDescription}, reporter_name = ${patch.reporterName}
+        where id = ${id}
+        returning id, category, description, location_description, latitude, longitude, photo_urls, reporter_name, status, created_at`
+      return rows[0] ? mapReport(rows[0]) : null
+    },
+
+    async deleteRiverReport(id: number): Promise<void> {
+      await sql`delete from river_reports where id = ${id}`
     },
 
     async listActivities(): Promise<Activity[]> {

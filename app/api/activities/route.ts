@@ -4,8 +4,7 @@ import { ACTIVITY_KIND_LABELS, MAX_ACTIVITY_PHOTOS, type ActivityKind } from '@/
 
 export const dynamic = 'force-dynamic'
 
-// Dashboard-only ("Log activity" on River watch). Not access-controlled yet:
-// see docs/known-issues.md.
+// Dashboard-only ("Log activity" on River watch). Protected by proxy.ts.
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as Record<string, unknown> | null
   if (!body) {

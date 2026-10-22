@@ -58,13 +58,22 @@ urgent for the demo, but worth doing before this goes further than a pilot.
   - The waitlist form only returns a count publicly (by design), but a real
     admin view of entries (with contact details) should sit behind login
     instead of the public count — not built yet.
-  - Two write endpoints meant to be team-only aren't actually protected by
-    `proxy.ts` (it only covers page routes under `/dashboard`):
-    `PATCH /api/reports/[id]/status` (marking a report resolved) and
-    `POST /api/activities` (logging a restoration activity). Both still work
-    for anyone who calls them directly, not just from the dashboard UI.
   - No password reset flow, no rate limiting on login attempts, and no
     CSRF token beyond the cookie's `SameSite=Lax`.
+
+## Manual data entry
+
+- **Tanks and greywater systems can be registered, but not edited or
+  removed.** `/dashboard/tanks` ("+ Add tank") and `/dashboard/recycling`
+  ("+ Add system" / "+ Log reading") cover creating a new tank, a new
+  greywater system, and logging a greywater reading by hand — but there's no
+  UI yet to fix a typo in a tank's name or coordinates, or to remove one
+  added by mistake. Would need an edit/delete route plus confirmation UI.
+- **Tank readings stay sensor-only on purpose.** Level %, litres harvested
+  and litres used come from the simulator/ingest pipeline
+  (`app/api/ingest/route.ts`, device-key authenticated); there's no manual
+  entry for those, unlike greywater readings, since they're continuous
+  measurements a person can't reliably hand-enter.
 
 ## Accessibility
 

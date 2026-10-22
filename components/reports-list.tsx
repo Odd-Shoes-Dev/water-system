@@ -2,9 +2,11 @@
 
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { ConfirmDialog } from './confirm-dialog'
 import { ImageLightbox } from './image-lightbox'
 import { MapView } from './map-view'
 import { Modal } from './modal'
+import { ReportEditForm } from './report-edit-form'
 import { REPORT_CATEGORIES, type ReportCategory } from '@/lib/data/types'
 
 // RiverReport.createdAt is a Date on the server; dates cross into a client
@@ -46,8 +48,11 @@ export function ReportsList({
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const [resolving, setResolving] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   const selected = items.find((r) => r.id === selectedId) ?? null
+  const nestedModalOpen = editing || deleting || lightboxIndex !== null
 
   function openReport(report: ReportListItem) {
     setSelectedId(report.id)
@@ -68,6 +73,16 @@ export function ReportsList({
       }
     } finally {
       setResolving(false)
+    }
+  }
+
+  async function handleDelete() {
+    if (!selected) return
+    const response = await fetch(`/api/reports/${selected.id}`, { method: 'DELETE' })
+    setDeleting(false)
+    if (response.ok) {
+      setSelectedId(null)
+      router.refresh()
     }
   }
 
@@ -121,7 +136,7 @@ export function ReportsList({
         <Modal
           onClose={() => setSelectedId(null)}
           titleId="report-modal-title"
-          disableEscape={lightboxIndex !== null}
+          disableEscape={nestedModalOpen}
         >
           <div className="flex items-start justify-between gap-4">
             <h3 id="report-modal-title" className="font-heading text-2xl">
@@ -150,6 +165,24 @@ export function ReportsList({
               >
                 {resolving ? 'Marking resolved…' : 'Mark resolved'}
               </button>
+            )}
+            {allowStatusUpdate && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setEditing(true)}
+                  className="text-xs font-medium text-accent underline"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDeleting(true)}
+                  className="text-xs font-medium text-destructive underline"
+                >
+                  Delete
+                </button>
+              </>
             )}
           </div>
 
@@ -227,6 +260,26 @@ export function ReportsList({
           index={lightboxIndex}
           onIndexChange={setLightboxIndex}
           onClose={() => setLightboxIndex(null)}
+        />
+      )}
+
+      {selected && editing && (
+        <ReportEditForm
+          report={selected}
+          onClose={() => setEditing(false)}
+          onSaved={() => {
+            setEditing(false)
+            router.refresh()
+          }}
+        />
+      )}
+
+      {selected && deleting && (
+        <ConfirmDialog
+          title="Delete this report?"
+          description="This removes it from the dashboard and the public reports page."
+          onConfirm={handleDelete}
+          onClose={() => setDeleting(false)}
         />
       )}
     </>

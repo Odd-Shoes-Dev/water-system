@@ -1,6 +1,6 @@
 // Summaries for the Streams page: one section per data stream.
 import type { DataStore } from '@/lib/data/store'
-import { REPORT_CATEGORIES, type ActivityKind, type ReportCategory } from '@/lib/data/types'
+import { REPORT_CATEGORIES, type ActivityKind, type GreywaterStatus, type ReportCategory } from '@/lib/data/types'
 
 // Order and label for breaking "households reached" down by how they were
 // reached, instead of one combined total.
@@ -18,7 +18,10 @@ export type TankSummary = {
   id: string
   name: string
   site: string
+  latitude: number
+  longitude: number
   capacityLitres: number
+  roofAreaM2: number
   latestLevelPercent: number | null
   harvestedLast30Days: number
   usedLast30Days: number
@@ -28,7 +31,9 @@ export type GreywaterSummary = {
   id: string
   name: string
   site: string
-  status: string
+  latitude: number
+  longitude: number
+  status: GreywaterStatus
   latestPressureKpa: number | null
   reusedLast30Days: number
 }
@@ -70,7 +75,10 @@ export async function getStreamsOverview(store: DataStore): Promise<StreamsOverv
       id: tank.id,
       name: tank.name,
       site: tank.site,
+      latitude: tank.latitude,
+      longitude: tank.longitude,
       capacityLitres: tank.capacityLitres,
+      roofAreaM2: tank.roofAreaM2,
       latestLevelPercent: latest(readings)?.levelPercent ?? null,
       harvestedLast30Days: Math.round(recent.reduce((t, r) => t + r.litresHarvested, 0)),
       usedLast30Days: Math.round(recent.reduce((t, r) => t + r.litresUsed, 0)),
@@ -84,6 +92,8 @@ export async function getStreamsOverview(store: DataStore): Promise<StreamsOverv
       id: unit.id,
       name: unit.name,
       site: unit.site,
+      latitude: unit.latitude,
+      longitude: unit.longitude,
       status: unit.status,
       latestPressureKpa: latest(readings)?.filterPressureKpa ?? null,
       reusedLast30Days: Math.round(recent.reduce((t, r) => t + r.litresReused, 0)),

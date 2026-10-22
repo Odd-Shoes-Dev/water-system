@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 const ALLOWED_STATUSES = ['open', 'verified', 'resolved'] as const
 
 // Dashboard-only action (used from River watch's "Mark resolved" button).
-// Not access-controlled yet: see docs/known-issues.md.
+// Protected by proxy.ts.
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: idParam } = await params
   const id = Number(idParam)
