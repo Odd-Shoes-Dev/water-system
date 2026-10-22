@@ -28,6 +28,11 @@ export default async function DashboardImpactPage() {
         <StatCard label="🧹 Clean-ups conducted" value={number(impact.cleanUpsConducted)} />
         <StatCard label="👥 Youth engaged" value={number(impact.youthEngaged)} />
         <StatCard label="🏠 Households reached" value={number(impact.householdsReached)} />
+        <StatCard label="🧑‍🤝‍🧑 People reached" value={number(impact.peopleReached)} />
+        <StatCard label="💼 People employed" value={number(impact.peopleEmployed)} />
+        <StatCard label="🙋 Volunteers" value={number(impact.volunteers)} />
+        <StatCard label="🧺 Waste collected" value={number(impact.wasteCollectedKg)} unit="kg" />
+        <StatCard label="🌳 Area restored" value={number(impact.areaRestoredM2)} unit="m²" />
       </div>
     </div>
   )

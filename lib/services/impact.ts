@@ -10,6 +10,11 @@ export type ImpactSummary = {
   cleanUpsConducted: number
   youthEngaged: number
   householdsReached: number
+  peopleReached: number
+  peopleEmployed: number
+  volunteers: number
+  wasteCollectedKg: number
+  areaRestoredM2: number
 }
 
 const sum = (values: number[]) => values.reduce((total, value) => total + value, 0)
@@ -31,5 +36,10 @@ export async function getImpactSummary(store: DataStore): Promise<ImpactSummary>
     cleanUpsConducted: activities.filter((a) => a.kind === 'clean_up').length,
     youthEngaged: sum(activities.map((a) => a.youthCount)),
     householdsReached: sum(activities.map((a) => a.householdsReached)),
+    peopleReached: sum(activities.map((a) => a.peopleReached)),
+    peopleEmployed: sum(activities.map((a) => a.peopleEmployed)),
+    volunteers: sum(activities.map((a) => a.volunteers)),
+    wasteCollectedKg: Math.round(sum(activities.map((a) => a.wasteCollectedKg))),
+    areaRestoredM2: Math.round(sum(activities.map((a) => a.areaRestoredM2))),
   }
 }

@@ -15,8 +15,9 @@ Migrations are plain SQL files. You run them yourself; the app never changes the
 | `migrations/0007_add_team_members.sql` | Adds the team_members table, for dashboard sign-in. |
 | `migrations/0008_soft_delete_tanks_and_greywater.sql` | Adds a deleted_at column to tanks and greywater_units, so deleting one from the dashboard hides it without losing its reading history. |
 | `migrations/0009_add_activity_people_metrics.sql` | Adds people_reached, people_employed and volunteers to community_activities. |
+| `migrations/0010_tank_capacity_optional.sql` | Relaxes tanks' capacity_litres/roof_area_m2 check constraints to allow 0, matching the "Add tank" form where both are optional. |
 
-Run these in order, `0001` through `0009`. Each one only depends on the ones
+Run these in order, `0001` through `0010`. Each one only depends on the ones
 before it, so running them in file order is always safe.
 
 There's no seed-data migration here, by design: seed data needs the *final*
@@ -24,7 +25,7 @@ schema, so it can never be safely numbered into the middle of this sequence,
 it would depend on files that haven't run yet. See "Adding demo data" below
 if you want some.
 
-All nine files are safe to re-run; they skip anything that already exists.
+All ten files are safe to re-run; they skip anything that already exists.
 
 ## Dashboard sign-in
 
@@ -41,7 +42,7 @@ Nobody self-registers through the UI; accounts are only ever added this way.
 The database starts empty. If you want simulated demo data (30 days of tank,
 rainfall and greywater readings, sample reports, activities, stakeholders,
 waitlist entries, the demo device and a demo team member), generate it after
-running all nine migrations above:
+running all ten migrations above:
 
 ```bash
 npm run db:generate-seed
