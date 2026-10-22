@@ -30,6 +30,12 @@ export type TankReading = {
   litresUsed: number
 }
 
+// A separate type rather than making `id` required on TankReading itself —
+// would break the simulator/seed/ingest callers that build one for
+// insertTankReadings. listTankReadings() returns this; the manual-entry
+// edit/delete routes need a stable id to act on.
+export type TankReadingWithId = TankReading & { id: number }
+
 export type RainfallReading = {
   site: string
   recordedAt: Date
@@ -137,6 +143,9 @@ export type Activity = {
   occurredOn: string
   youthCount: number
   householdsReached: number
+  peopleReached: number
+  peopleEmployed: number
+  volunteers: number
   facilitiesCount: number
   treesPlanted: number
   participants: number
@@ -145,8 +154,10 @@ export type Activity = {
   photoUrls: string[]
 }
 
-// What the "Log activity" form submits. The title is derived server-side
-// from the kind and location, so the form doesn't need to ask for one.
+// What the "Log activity" form submits — also reused as the edit payload
+// (see updateActivity in lib/data/store.ts), same as NewTank/NewGreywaterUnit
+// already do. The title is derived server-side from the kind and location,
+// so the form doesn't need to ask for one.
 export type NewActivity = {
   kind: ActivityKind
   location: string
@@ -154,6 +165,9 @@ export type NewActivity = {
   occurredOn: string
   youthCount: number
   householdsReached: number
+  peopleReached: number
+  peopleEmployed: number
+  volunteers: number
   treesPlanted: number
   participants: number
   wasteCollectedKg: number

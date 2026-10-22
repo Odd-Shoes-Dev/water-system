@@ -14,6 +14,7 @@ import type {
   NewWaitlistEntry,
   RiverReport,
   Tank,
+  TankReadingWithId,
   TeamMember,
   WaitlistEntry,
 } from '@/lib/data/types'
@@ -25,7 +26,8 @@ export function createDemoStore(): DataStore {
   const seed = buildSeed()
   const tanks = [...seed.tanks]
   const deletedTankIds = new Set<string>()
-  const tankReadings = [...seed.tankReadings]
+  let nextTankReadingId = 1
+  const tankReadings: TankReadingWithId[] = seed.tankReadings.map((r) => ({ ...r, id: nextTankReadingId++ }))
   const rainfall = [...seed.rainfall]
   const greywaterUnits = [...seed.greywaterUnits]
   const deletedGreywaterUnitIds = new Set<string>()
@@ -62,7 +64,17 @@ export function createDemoStore(): DataStore {
       return tankReadings
     },
     async insertTankReadings(readings) {
-      tankReadings.push(...readings)
+      tankReadings.push(...readings.map((r) => ({ ...r, id: nextTankReadingId++ })))
+    },
+    async updateTankReading(id, patch) {
+      const reading = tankReadings.find((r) => r.id === id)
+      if (!reading) return null
+      Object.assign(reading, patch)
+      return reading
+    },
+    async deleteTankReading(id) {
+      const index = tankReadings.findIndex((r) => r.id === id)
+      if (index !== -1) tankReadings.splice(index, 1)
     },
 
     async listRainfall() {
@@ -148,6 +160,16 @@ export function createDemoStore(): DataStore {
       }
       activities.push(created)
       return created
+    },
+    async updateActivity(id, patch: NewActivity) {
+      const activity = activities.find((a) => a.id === id)
+      if (!activity) return null
+      Object.assign(activity, patch, { title: deriveActivityTitle(patch.kind, patch.location) })
+      return activity
+    },
+    async deleteActivity(id) {
+      const index = activities.findIndex((a) => a.id === id)
+      if (index !== -1) activities.splice(index, 1)
     },
     async listStakeholders() {
       return seed.stakeholders

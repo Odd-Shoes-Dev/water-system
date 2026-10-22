@@ -16,6 +16,7 @@ import type {
   Stakeholder,
   Tank,
   TankReading,
+  TankReadingWithId,
   TeamMember,
 } from './types'
 
@@ -28,8 +29,13 @@ export interface DataStore {
   // Soft delete: keeps tank_readings history intact, just hides the tank
   // from listTanks(). See neon-database/migrations/0008_soft_delete_tanks_and_greywater.sql.
   deleteTank(id: string): Promise<void>
-  listTankReadings(): Promise<TankReading[]>
+  listTankReadings(): Promise<TankReadingWithId[]>
   insertTankReadings(readings: TankReading[]): Promise<void>
+  updateTankReading(
+    id: number,
+    patch: Pick<TankReading, 'levelPercent' | 'litresHarvested' | 'litresUsed'>,
+  ): Promise<TankReadingWithId | null>
+  deleteTankReading(id: number): Promise<void>
 
   listRainfall(): Promise<RainfallReading[]>
   insertRainfall(readings: RainfallReading[]): Promise<void>
@@ -55,6 +61,8 @@ export interface DataStore {
 
   listActivities(): Promise<Activity[]>
   createActivity(activity: NewActivity): Promise<Activity>
+  updateActivity(id: number, patch: NewActivity): Promise<Activity | null>
+  deleteActivity(id: number): Promise<void>
   listStakeholders(): Promise<Stakeholder[]>
 
   findDeviceByKeyHash(keyHash: string): Promise<Device | null>

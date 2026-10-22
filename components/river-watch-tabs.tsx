@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { ActivitiesList } from './activities-list'
 import { ActivityForm } from './activity-form'
 import type { MapMarker } from './leaflet-map'
@@ -22,9 +23,8 @@ export function RiverWatchTabs({
   activities: Activity[]
   markers: MapMarker[]
 }) {
+  const router = useRouter()
   const [tab, setTab] = useState<Tab>('reports')
-  const [items, setItems] = useState(activities)
-  useEffect(() => setItems(activities), [activities])
   const [reportFormOpen, setReportFormOpen] = useState(false)
   const [activityFormOpen, setActivityFormOpen] = useState(false)
 
@@ -81,7 +81,7 @@ export function RiverWatchTabs({
           <ReportsList reports={reports} allowStatusUpdate />
         </div>
       ) : (
-        <ActivitiesList activities={items} />
+        <ActivitiesList activities={activities} />
       )}
 
       {reportFormOpen && (
@@ -93,9 +93,9 @@ export function RiverWatchTabs({
       {activityFormOpen && (
         <ActivityForm
           onClose={() => setActivityFormOpen(false)}
-          onCreated={(activity) => {
-            setItems((current) => [activity, ...current])
+          onSaved={() => {
             setActivityFormOpen(false)
+            router.refresh()
           }}
         />
       )}

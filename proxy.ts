@@ -24,10 +24,11 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     '/dashboard/:path*',
-    '/api/activities',
+    '/api/activities/:path*',
     '/api/reports/:id',
     '/api/reports/:id/status',
     '/api/tanks/:path*',
+    '/api/tank-readings/:path*',
     '/api/greywater-units/:path*',
     '/api/greywater-readings/:path*',
   ],

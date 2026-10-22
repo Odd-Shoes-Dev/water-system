@@ -7,12 +7,16 @@ import { Modal } from './modal'
 type PhotoSlot = { id: string; file: File; preview: string }
 
 export function ActivityForm({
+  activity,
   onClose,
-  onCreated,
+  onSaved,
 }: {
+  activity?: Activity
   onClose: () => void
-  onCreated: (activity: Activity) => void
+  onSaved: (activity: Activity) => void
 }) {
+  const editing = Boolean(activity)
+  const [existingPhotoUrls, setExistingPhotoUrls] = useState<string[]>(activity?.photoUrls ?? [])
   const [photos, setPhotos] = useState<PhotoSlot[]>([])
   const [photoError, setPhotoError] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -21,18 +25,20 @@ export function ActivityForm({
   const statusRef = useRef<HTMLDivElement>(null)
   const photoInputRef = useRef<HTMLInputElement>(null)
 
+  const totalPhotoCount = existingPhotoUrls.length + photos.length
+
   useEffect(() => {
     if (error) statusRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }, [error])
 
   function addPhotos(event: React.ChangeEvent<HTMLInputElement>) {
     const chosen = Array.from(event.target.files ?? [])
-    event.target.value = ''
+    event.target.value = '' // lets the same file be picked again later if removed
     if (chosen.length === 0) return
 
     setPhotoError(null)
     setPhotos((current) => {
-      const room = MAX_ACTIVITY_PHOTOS - current.length
+      const room = MAX_ACTIVITY_PHOTOS - existingPhotoUrls.length - current.length
       if (room <= 0) {
         setPhotoError(`You can attach up to ${MAX_ACTIVITY_PHOTOS} photos.`)
         return current
@@ -54,6 +60,10 @@ export function ActivityForm({
     })
   }
 
+  function removeExistingPhoto(url: string) {
+    setExistingPhotoUrls((current) => current.filter((u) => u !== url))
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const form = event.currentTarget
@@ -62,11 +72,11 @@ export function ActivityForm({
 
     const data = new FormData(form)
 
-    let photoUrls: string[] = []
+    let uploadedUrls: string[] = []
     if (photos.length > 0) {
       setUploadingPhotos(true)
       try {
-        photoUrls = await Promise.all(
+        uploadedUrls = await Promise.all(
           photos.map(async (photo) => {
             const photoData = new FormData()
             photoData.append('file', photo.file)
@@ -94,16 +104,19 @@ export function ActivityForm({
       participants: number('participants'),
       youthCount: number('youthCount'),
       householdsReached: number('householdsReached'),
+      peopleReached: number('peopleReached'),
+      peopleEmployed: number('peopleEmployed'),
+      volunteers: number('volunteers'),
       treesPlanted: number('treesPlanted'),
       wasteCollectedKg: number('wasteCollectedKg'),
       areaRestoredM2: number('areaRestoredM2'),
       description: data.get('description'),
-      photoUrls,
+      photoUrls: [...existingPhotoUrls, ...uploadedUrls],
     }
 
     try {
-      const response = await fetch('/api/activities', {
-        method: 'POST',
+      const response = await fetch(editing ? `/api/activities/${activity!.id}` : '/api/activities', {
+        method: editing ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
@@ -115,7 +128,7 @@ export function ActivityForm({
       }
 
       const body = await response.json()
-      onCreated(body.activity as Activity)
+      onSaved(body.activity as Activity)
     } catch {
       setError('Could not reach the server. Check your connection and try again.')
     } finally {
@@ -130,7 +143,7 @@ export function ActivityForm({
     <Modal onClose={onClose} titleId="activity-form-title">
       <div className="flex items-start justify-between gap-4">
         <h3 id="activity-form-title" className="font-heading text-2xl">
-          Restoration activity
+          {editing ? 'Edit activity' : 'Restoration activity'}
         </h3>
         <button
           type="button"
@@ -146,7 +159,7 @@ export function ActivityForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block space-y-1 text-sm">
             <span className="font-medium">Activity type</span>
-            <select name="kind" required defaultValue={kinds[1]} className={inputClass}>
+            <select name="kind" required defaultValue={activity?.kind ?? kinds[1]} className={inputClass}>
               {kinds.map((kind) => (
                 <option key={kind} value={kind}>{ACTIVITY_KIND_LABELS[kind]}</option>
               ))}
@@ -154,46 +167,81 @@ export function ActivityForm({
           </label>
           <label className="block space-y-1 text-sm">
             <span className="font-medium">Location</span>
-            <input name="location" required minLength={2} maxLength={100} placeholder="e.g. Kakyeka" className={inputClass} />
+            <input
+              name="location"
+              required
+              minLength={2}
+              maxLength={100}
+              defaultValue={activity?.location}
+              placeholder="e.g. Kakyeka"
+              className={inputClass}
+            />
           </label>
 
           <label className="block space-y-1 text-sm">
             <span className="font-medium">Date</span>
-            <input name="occurredOn" type="date" required className={inputClass} />
+            <input name="occurredOn" type="date" required defaultValue={activity?.occurredOn} className={inputClass} />
           </label>
           <label className="block space-y-1 text-sm">
             <span className="font-medium">Participants</span>
-            <input name="participants" type="number" min={0} defaultValue={0} className={inputClass} />
+            <input name="participants" type="number" min={0} defaultValue={activity?.participants ?? 0} className={inputClass} />
           </label>
 
           <label className="block space-y-1 text-sm">
             <span className="font-medium">Youth participants</span>
-            <input name="youthCount" type="number" min={0} defaultValue={0} className={inputClass} />
+            <input name="youthCount" type="number" min={0} defaultValue={activity?.youthCount ?? 0} className={inputClass} />
           </label>
           <label className="block space-y-1 text-sm">
             <span className="font-medium">Households reached</span>
-            <input name="householdsReached" type="number" min={0} defaultValue={0} className={inputClass} />
+            <input name="householdsReached" type="number" min={0} defaultValue={activity?.householdsReached ?? 0} className={inputClass} />
           </label>
 
           <label className="block space-y-1 text-sm">
-            <span className="font-medium">Trees planted</span>
-            <input name="treesPlanted" type="number" min={0} defaultValue={0} className={inputClass} />
+            <span className="font-medium">People reached</span>
+            <input name="peopleReached" type="number" min={0} defaultValue={activity?.peopleReached ?? 0} className={inputClass} />
           </label>
           <label className="block space-y-1 text-sm">
+            <span className="font-medium">People employed</span>
+            <input name="peopleEmployed" type="number" min={0} defaultValue={activity?.peopleEmployed ?? 0} className={inputClass} />
+          </label>
+
+          <label className="block space-y-1 text-sm">
+            <span className="font-medium">Volunteers</span>
+            <input name="volunteers" type="number" min={0} defaultValue={activity?.volunteers ?? 0} className={inputClass} />
+          </label>
+          <label className="block space-y-1 text-sm">
+            <span className="font-medium">Trees planted</span>
+            <input name="treesPlanted" type="number" min={0} defaultValue={activity?.treesPlanted ?? 0} className={inputClass} />
+          </label>
+
+          <label className="block space-y-1 text-sm">
             <span className="font-medium">Waste collected (kg)</span>
-            <input name="wasteCollectedKg" type="number" min={0} step="0.1" defaultValue={0} className={inputClass} />
+            <input name="wasteCollectedKg" type="number" min={0} step="0.1" defaultValue={activity?.wasteCollectedKg ?? 0} className={inputClass} />
+          </label>
+          <label className="block space-y-1 text-sm">
+            <span className="font-medium">Area cleaned / restored (m²)</span>
+            <input name="areaRestoredM2" type="number" min={0} step="0.1" defaultValue={activity?.areaRestoredM2 ?? 0} className={inputClass} />
           </label>
         </div>
 
-        <label className="block space-y-1 text-sm">
-          <span className="font-medium">Area cleaned / restored (m²)</span>
-          <input name="areaRestoredM2" type="number" min={0} step="0.1" defaultValue={0} className={inputClass} />
-        </label>
-
         <div className="space-y-2 text-sm">
           <span className="font-medium">Photos (optional, up to {MAX_ACTIVITY_PHOTOS})</span>
-          {photos.length > 0 && (
+          {(existingPhotoUrls.length > 0 || photos.length > 0) && (
             <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
+              {existingPhotoUrls.map((url) => (
+                <div key={url} className="group relative aspect-square">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- remote ImageKit URL, not a local asset */}
+                  <img src={url} alt="Previously added photo" className="h-full w-full rounded-md object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeExistingPhoto(url)}
+                    aria-label="Remove this photo"
+                    className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-xs leading-none text-destructive-foreground"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
               {photos.map((photo) => (
                 <div key={photo.id} className="group relative aspect-square">
                   {/* eslint-disable-next-line @next/next/no-img-element -- preview of a locally chosen file, not a remote asset */}
@@ -210,7 +258,7 @@ export function ActivityForm({
               ))}
             </div>
           )}
-          {photos.length < MAX_ACTIVITY_PHOTOS && (
+          {totalPhotoCount < MAX_ACTIVITY_PHOTOS && (
             <input
               ref={photoInputRef}
               type="file"
@@ -226,7 +274,7 @@ export function ActivityForm({
 
         <label className="block space-y-1 text-sm">
           <span className="font-medium">Remarks</span>
-          <textarea name="description" rows={3} maxLength={1000} className={inputClass} placeholder="What happened?" />
+          <textarea name="description" rows={3} maxLength={1000} defaultValue={activity?.description} className={inputClass} placeholder="What happened?" />
         </label>
 
         <div ref={statusRef} aria-live="polite">
@@ -238,7 +286,13 @@ export function ActivityForm({
           disabled={submitting}
           className="w-full rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-60"
         >
-          {uploadingPhotos ? `Uploading ${photos.length} photo${photos.length === 1 ? '' : 's'}…` : submitting ? 'Saving…' : 'Save activity'}
+          {uploadingPhotos
+            ? `Uploading ${photos.length} photo${photos.length === 1 ? '' : 's'}…`
+            : submitting
+              ? 'Saving…'
+              : editing
+                ? 'Save changes'
+                : 'Save activity'}
         </button>
       </form>
     </Modal>

@@ -21,6 +21,7 @@ import type {
   Stakeholder,
   Tank,
   TankReading,
+  TankReadingWithId,
   TeamMember,
 } from '@/lib/data/types'
 import { deriveActivityTitle } from '@/lib/services/activities'
@@ -80,12 +81,13 @@ export function createNeonStore(databaseUrl: string): DataStore {
       await sql`update tanks set deleted_at = now() where id = ${id}`
     },
 
-    async listTankReadings(): Promise<TankReading[]> {
+    async listTankReadings(): Promise<TankReadingWithId[]> {
       const rows = await sql`
-        select tank_id, recorded_at, level_percent, litres_harvested, litres_used
+        select id, tank_id, recorded_at, level_percent, litres_harvested, litres_used
         from tank_readings
         order by recorded_at`
       return rows.map((r) => ({
+        id: Number(r.id),
         tankId: r.tank_id,
         recordedAt: new Date(r.recorded_at),
         levelPercent: Number(r.level_percent),
@@ -111,6 +113,31 @@ export function createNeonStore(databaseUrl: string): DataStore {
             litres_harvested numeric, litres_used numeric)
           on conflict (tank_id, recorded_at) do nothing`
       }
+    },
+
+    async updateTankReading(
+      id: number,
+      patch: Pick<TankReading, 'levelPercent' | 'litresHarvested' | 'litresUsed'>,
+    ): Promise<TankReadingWithId | null> {
+      const rows = await sql`
+        update tank_readings set level_percent = ${patch.levelPercent},
+          litres_harvested = ${patch.litresHarvested}, litres_used = ${patch.litresUsed}
+        where id = ${id}
+        returning id, tank_id, recorded_at, level_percent, litres_harvested, litres_used`
+      const row = rows[0]
+      if (!row) return null
+      return {
+        id: Number(row.id),
+        tankId: row.tank_id,
+        recordedAt: new Date(row.recorded_at),
+        levelPercent: Number(row.level_percent),
+        litresHarvested: Number(row.litres_harvested),
+        litresUsed: Number(row.litres_used),
+      }
+    },
+
+    async deleteTankReading(id: number): Promise<void> {
+      await sql`delete from tank_readings where id = ${id}`
     },
 
     async listRainfall(): Promise<RainfallReading[]> {
@@ -276,8 +303,8 @@ export function createNeonStore(databaseUrl: string): DataStore {
     async listActivities(): Promise<Activity[]> {
       const rows = await sql`
         select id, kind, title, location, description, occurred_on::text as occurred_on, youth_count,
-               households_reached, facilities_count, trees_planted, participants, waste_collected_kg,
-               area_restored_m2, photo_urls
+               households_reached, people_reached, people_employed, volunteers, facilities_count,
+               trees_planted, participants, waste_collected_kg, area_restored_m2, photo_urls
         from community_activities
         order by occurred_on desc`
       return rows.map(mapActivity)
@@ -288,18 +315,42 @@ export function createNeonStore(databaseUrl: string): DataStore {
       const rows = await sql`
         insert into community_activities (
           kind, title, location, description, occurred_on, youth_count, households_reached,
-          facilities_count, trees_planted, participants, waste_collected_kg, area_restored_m2, photo_urls
+          people_reached, people_employed, volunteers, facilities_count, trees_planted, participants,
+          waste_collected_kg, area_restored_m2, photo_urls
         )
         values (
           ${activity.kind}, ${title}, ${activity.location}, ${activity.description}, ${activity.occurredOn},
-          ${activity.youthCount}, ${activity.householdsReached}, 0, ${activity.treesPlanted},
+          ${activity.youthCount}, ${activity.householdsReached}, ${activity.peopleReached},
+          ${activity.peopleEmployed}, ${activity.volunteers}, 0, ${activity.treesPlanted},
           ${activity.participants}, ${activity.wasteCollectedKg}, ${activity.areaRestoredM2},
           ${activity.photoUrls}::text[]
         )
         returning id, kind, title, location, description, occurred_on::text as occurred_on, youth_count,
-                  households_reached, facilities_count, trees_planted, participants, waste_collected_kg,
-                  area_restored_m2, photo_urls`
+                  households_reached, people_reached, people_employed, volunteers, facilities_count,
+                  trees_planted, participants, waste_collected_kg, area_restored_m2, photo_urls`
       return mapActivity(rows[0])
+    },
+
+    async updateActivity(id: number, patch: NewActivity): Promise<Activity | null> {
+      const title = deriveActivityTitle(patch.kind, patch.location)
+      const rows = await sql`
+        update community_activities set
+          kind = ${patch.kind}, title = ${title}, location = ${patch.location},
+          description = ${patch.description}, occurred_on = ${patch.occurredOn},
+          youth_count = ${patch.youthCount}, households_reached = ${patch.householdsReached},
+          people_reached = ${patch.peopleReached}, people_employed = ${patch.peopleEmployed},
+          volunteers = ${patch.volunteers}, trees_planted = ${patch.treesPlanted},
+          participants = ${patch.participants}, waste_collected_kg = ${patch.wasteCollectedKg},
+          area_restored_m2 = ${patch.areaRestoredM2}, photo_urls = ${patch.photoUrls}::text[]
+        where id = ${id}
+        returning id, kind, title, location, description, occurred_on::text as occurred_on, youth_count,
+                  households_reached, people_reached, people_employed, volunteers, facilities_count,
+                  trees_planted, participants, waste_collected_kg, area_restored_m2, photo_urls`
+      return rows[0] ? mapActivity(rows[0]) : null
+    },
+
+    async deleteActivity(id: number): Promise<void> {
+      await sql`delete from community_activities where id = ${id}`
     },
 
     async listStakeholders(): Promise<Stakeholder[]> {
@@ -404,6 +455,9 @@ function mapActivity(r: Record<string, any>): Activity {
     occurredOn: r.occurred_on,
     youthCount: Number(r.youth_count),
     householdsReached: Number(r.households_reached),
+    peopleReached: Number(r.people_reached ?? 0),
+    peopleEmployed: Number(r.people_employed ?? 0),
+    volunteers: Number(r.volunteers ?? 0),
     facilitiesCount: Number(r.facilities_count),
     treesPlanted: Number(r.trees_planted),
     participants: Number(r.participants),

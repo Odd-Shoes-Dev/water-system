@@ -5,14 +5,24 @@ import { useState } from 'react'
 import type { StreamsOverview, TankSummary } from '@/lib/services/streams'
 import { ConfirmDialog } from '../confirm-dialog'
 import { TankForm } from '../tank-form'
+import { TankReadingForm } from '../tank-reading-form'
+import { TankReadingsHistory, type TankReadingListItem } from '../tank-readings-history'
 
 const number = (value: number) => value.toLocaleString('en-US')
 
-export function TanksPanel({ overview }: { overview: StreamsOverview }) {
+export function TanksPanel({
+  overview,
+  readings,
+}: {
+  overview: StreamsOverview
+  readings: TankReadingListItem[]
+}) {
   const router = useRouter()
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<TankSummary | null>(null)
   const [deleting, setDeleting] = useState<TankSummary | null>(null)
+  const [readingFormOpen, setReadingFormOpen] = useState(false)
+  const [viewingTank, setViewingTank] = useState<TankSummary | null>(null)
 
   function openEdit(tank: TankSummary) {
     setEditing(tank)
@@ -38,13 +48,22 @@ export function TanksPanel({ overview }: { overview: StreamsOverview }) {
           <p className="text-sm uppercase tracking-[0.2em] text-accent">Tanks</p>
           <h1 className="mt-2 font-heading text-4xl">Rainwater tanks</h1>
         </div>
-        <button
-          type="button"
-          onClick={openAdd}
-          className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-        >
-          + Add tank
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => setReadingFormOpen(true)}
+            className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+          >
+            + Log reading
+          </button>
+          <button
+            type="button"
+            onClick={openAdd}
+            className="rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-accent"
+          >
+            + Add tank
+          </button>
+        </div>
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-border bg-card">
@@ -75,6 +94,9 @@ export function TanksPanel({ overview }: { overview: StreamsOverview }) {
                 <td className="px-4 py-3">{number(tank.usedLast30Days)} litres</td>
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-3 whitespace-nowrap">
+                    <button type="button" onClick={() => setViewingTank(tank)} className="text-accent hover:underline">
+                      View readings
+                    </button>
                     <button type="button" onClick={() => openEdit(tank)} className="text-accent hover:underline">
                       Edit
                     </button>
@@ -119,6 +141,27 @@ export function TanksPanel({ overview }: { overview: StreamsOverview }) {
           description="This hides it from the dashboard and the map. Its reading history is kept."
           onConfirm={handleDelete}
           onClose={() => setDeleting(null)}
+        />
+      )}
+
+      {readingFormOpen && (
+        <TankReadingForm
+          tanks={overview.tanks}
+          onClose={() => setReadingFormOpen(false)}
+          onSaved={() => {
+            setReadingFormOpen(false)
+            router.refresh()
+          }}
+        />
+      )}
+
+      {viewingTank && (
+        <TankReadingsHistory
+          tank={viewingTank}
+          tanks={overview.tanks}
+          readings={readings.filter((r) => r.tankId === viewingTank.id)}
+          onClose={() => setViewingTank(null)}
+          onChanged={() => router.refresh()}
         />
       )}
     </div>

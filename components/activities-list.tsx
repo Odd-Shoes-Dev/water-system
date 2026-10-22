@@ -1,17 +1,37 @@
+'use client'
+
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { ACTIVITY_KIND_LABELS, type Activity } from '@/lib/data/types'
+import { ActivityForm } from './activity-form'
+import { ConfirmDialog } from './confirm-dialog'
 
 const number = (value: number) => value.toLocaleString('en-US')
 const formatDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { dateStyle: 'medium' })
 
-// Pure display: the "+ Log activity" trigger and its form live in
-// RiverWatchTabs, which owns both the Reports and Restoration add-flows.
+// Dashboard-only (no public equivalent), so Edit/Delete are always shown —
+// unlike ReportsList, which gates them behind allowStatusUpdate.
 export function ActivitiesList({ activities }: { activities: Activity[] }) {
-  const riverCleanUps = activities.filter((a) => a.kind === 'clean_up').length
-  const treesPlanted = activities.reduce((sum, a) => sum + a.treesPlanted, 0)
-  const youthEngaged = activities.reduce((sum, a) => sum + a.youthCount, 0)
-  const wasteCollectedKg = activities.reduce((sum, a) => sum + a.wasteCollectedKg, 0)
+  const router = useRouter()
+  const [items, setItems] = useState(activities)
+  // Resync when the server sends fresh data, for example after router.refresh().
+  useEffect(() => setItems(activities), [activities])
+  const [editing, setEditing] = useState<Activity | null>(null)
+  const [deleting, setDeleting] = useState<Activity | null>(null)
 
-  const sorted = [...activities].sort((a, b) => (a.occurredOn < b.occurredOn ? 1 : -1))
+  const riverCleanUps = items.filter((a) => a.kind === 'clean_up').length
+  const treesPlanted = items.reduce((sum, a) => sum + a.treesPlanted, 0)
+  const youthEngaged = items.reduce((sum, a) => sum + a.youthCount, 0)
+  const wasteCollectedKg = items.reduce((sum, a) => sum + a.wasteCollectedKg, 0)
+
+  const sorted = [...items].sort((a, b) => (a.occurredOn < b.occurredOn ? 1 : -1))
+
+  async function handleDelete() {
+    if (!deleting) return
+    const response = await fetch(`/api/activities/${deleting.id}`, { method: 'DELETE' })
+    setDeleting(null)
+    if (response.ok) router.refresh()
+  }
 
   return (
     <div className="space-y-6">
@@ -41,6 +61,9 @@ export function ActivitiesList({ activities }: { activities: Activity[] }) {
             </div>
             <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted-foreground">
               <span>{number(activity.participants)} participants</span>
+              <span>{number(activity.peopleReached)} people reached</span>
+              <span>{number(activity.peopleEmployed)} employed</span>
+              <span>{number(activity.volunteers)} volunteers</span>
               <span>{number(activity.treesPlanted)} trees</span>
               <span>{number(activity.wasteCollectedKg)} kg waste</span>
               <span>{number(activity.areaRestoredM2)} m² restored</span>
@@ -54,9 +77,37 @@ export function ActivitiesList({ activities }: { activities: Activity[] }) {
                 ))}
               </div>
             )}
+            <div className="mt-3 flex gap-3 text-sm">
+              <button type="button" onClick={() => setEditing(activity)} className="text-accent hover:underline">
+                Edit
+              </button>
+              <button type="button" onClick={() => setDeleting(activity)} className="text-destructive hover:underline">
+                Delete
+              </button>
+            </div>
           </li>
         ))}
       </ul>
+
+      {editing && (
+        <ActivityForm
+          activity={editing}
+          onClose={() => setEditing(null)}
+          onSaved={() => {
+            setEditing(null)
+            router.refresh()
+          }}
+        />
+      )}
+
+      {deleting && (
+        <ConfirmDialog
+          title="Delete this activity?"
+          description="This removes it from River watch and from these totals."
+          onConfirm={handleDelete}
+          onClose={() => setDeleting(null)}
+        />
+      )}
     </div>
   )
 }
