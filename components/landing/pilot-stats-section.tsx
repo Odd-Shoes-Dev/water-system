@@ -1,5 +1,6 @@
 'use client'
 
+import { ClickToPlayVideo } from './click-to-play-video'
 import { useCountUp, useReveal } from './hooks'
 import { PhotoGallery } from './photo-gallery'
 
@@ -50,6 +51,20 @@ export function PilotStatsSection() {
 
         <div className="mx-auto mt-10 max-w-2xl">
           <PhotoGallery photos={PROOF_PHOTOS} />
+        </div>
+
+        <div className="mx-auto mt-10 max-w-2xl">
+          <h3 className="font-heading text-xl text-white">Building the greywater system</h3>
+          <p className="mt-2 text-sm text-story-mist/70">
+            A first prototype, built and tested with what was on hand.
+          </p>
+          <div className="mt-4">
+            <ClickToPlayVideo
+              src="/videos/sand-filtration-setup.mp4"
+              poster="/videos/sand-filtration-poster.jpg"
+              caption="Greywater recycling: prototype #1"
+            />
+          </div>
         </div>
 
         <dl className="mt-14 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
