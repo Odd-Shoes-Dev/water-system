@@ -13,6 +13,7 @@ import {
   MapIcon,
   MenuIcon,
   RecycleIcon,
+  UsersIcon,
   WavesIcon,
 } from '@/components/icons'
 import type { Session } from '@/lib/services/session'
@@ -24,6 +25,7 @@ const links = [
   { href: '/dashboard/alerts', label: 'Alerts', Icon: BellIcon },
   { href: '/dashboard/recycling', label: 'Recycling', Icon: RecycleIcon },
   { href: '/dashboard/river-watch', label: 'River watch', Icon: WavesIcon },
+  { href: '/dashboard/waitlist', label: 'Waitlist', Icon: UsersIcon },
   { href: '/dashboard/impact', label: 'Impact', Icon: ChartIcon },
 ]
 

@@ -10,10 +10,11 @@ const number = (value: number) => value.toLocaleString('en-US')
 
 export default async function DashboardOverviewPage() {
   const store = getDataStore()
-  const [overview, impact, session] = await Promise.all([
+  const [overview, impact, session, waitlistCount] = await Promise.all([
     getStreamsOverview(store),
     getImpactSummary(store),
     getSession(),
+    store.countWaitlistEntries(),
   ])
 
   const tanksWithReadings = overview.tanks.filter((t) => t.latestLevelPercent !== null)
@@ -39,6 +40,7 @@ export default async function DashboardOverviewPage() {
         <DashboardStat label="Average level" value={averageLevel === null ? '—' : String(averageLevel)} unit={averageLevel === null ? undefined : '%'} />
         <DashboardStat label="Water available" value={number(waterAvailableL)} unit="L" />
         <DashboardStat label="Greywater recycled" value={number(impact.greywaterRecycledL)} unit="L" />
+        <DashboardStat label="Waitlist signups" value={number(waitlistCount)} href="/dashboard/waitlist" />
         <DashboardStat label="Open alerts" value="—" caption="Coming soon" />
         <DashboardStat label="Sensors offline" value="—" caption="Coming soon" />
       </div>
@@ -82,20 +84,32 @@ function DashboardStat({
   value,
   unit,
   caption,
+  href,
 }: {
   label: string
   value: string
   unit?: string
   caption?: string
+  href?: string
 }) {
-  return (
-    <div className="rounded-lg border border-border bg-card p-5">
+  const content = (
+    <>
       <p className="text-sm text-muted-foreground">{label}</p>
       <p className="mt-2 font-body text-3xl font-medium tabular-nums">
         {value}
         {unit && <span className="ml-1 text-base text-muted-foreground">{unit}</span>}
       </p>
       {caption && <p className="mt-1 text-xs text-muted-foreground">{caption}</p>}
-    </div>
+    </>
   )
+
+  if (href) {
+    return (
+      <Link href={href} className="block rounded-lg border border-border bg-card p-5 transition-colors hover:border-accent">
+        {content}
+      </Link>
+    )
+  }
+
+  return <div className="rounded-lg border border-border bg-card p-5">{content}</div>
 }

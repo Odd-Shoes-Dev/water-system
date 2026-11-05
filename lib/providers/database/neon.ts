@@ -23,6 +23,7 @@ import type {
   TankReading,
   TankReadingWithId,
   TeamMember,
+  WaitlistEntry,
 } from '@/lib/data/types'
 import { deriveActivityTitle } from '@/lib/services/activities'
 import { slugId } from '@/lib/services/slug'
@@ -396,6 +397,23 @@ export function createNeonStore(databaseUrl: string): DataStore {
     async countWaitlistEntries(): Promise<number> {
       const rows = await sql`select count(*)::int as count from waitlist_entries`
       return Number(rows[0]?.count ?? 0)
+    },
+
+    async listWaitlistEntries(): Promise<WaitlistEntry[]> {
+      const rows = await sql`
+        select id, name, place, phone, email, photo_url, audio_url, created_at
+        from waitlist_entries
+        order by created_at desc`
+      return rows.map((r) => ({
+        id: Number(r.id),
+        name: r.name,
+        place: r.place,
+        phone: r.phone,
+        email: r.email,
+        photoUrl: r.photo_url,
+        audioUrl: r.audio_url,
+        createdAt: new Date(r.created_at),
+      }))
     },
 
     async findTeamMemberByEmail(email: string): Promise<TeamMember | null> {

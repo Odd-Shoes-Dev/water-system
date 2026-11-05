@@ -190,6 +190,9 @@ export function createDemoStore(): DataStore {
     async countWaitlistEntries() {
       return waitlist.length
     },
+    async listWaitlistEntries() {
+      return [...waitlist].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    },
 
     async findTeamMemberByEmail(email) {
       return teamMembers.find((m) => m.email.toLowerCase() === email.toLowerCase()) ?? null

@@ -18,6 +18,7 @@ import type {
   TankReading,
   TankReadingWithId,
   TeamMember,
+  WaitlistEntry,
 } from './types'
 
 // The only data interface the app uses. Each provider in lib/providers
@@ -68,10 +69,11 @@ export interface DataStore {
   findDeviceByKeyHash(keyHash: string): Promise<Device | null>
   touchDevice(deviceId: string): Promise<void>
 
-  // Only a count is exposed to the app; names and phone numbers are never
-  // listed back out, since this is personal data.
   createWaitlistEntry(entry: NewWaitlistEntry): Promise<void>
   countWaitlistEntries(): Promise<number>
+  // Full entries, including contact details — dashboard-only, protected by
+  // proxy.ts. The public side only ever sees countWaitlistEntries().
+  listWaitlistEntries(): Promise<WaitlistEntry[]>
 
   findTeamMemberByEmail(email: string): Promise<TeamMember | null>
   createTeamMember(member: NewTeamMember): Promise<TeamMember>
