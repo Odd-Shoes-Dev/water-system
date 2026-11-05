@@ -4,21 +4,27 @@ import { useState } from 'react'
 import { useReveal } from './hooks'
 
 const TOTAL_HOUSEHOLDS = 500
-const REACHED = 10
-const DOTS = Array.from({ length: TOTAL_HOUSEHOLDS }, (_, i) => i < REACHED)
 
-export function GoalsSection() {
+export function GoalsSection({ householdsReached }: { householdsReached: number }) {
   const { ref, visible } = useReveal<HTMLDivElement>(0.2)
   const [showGoal, setShowGoal] = useState(false)
+
+  const reached = Math.max(0, Math.min(householdsReached, TOTAL_HOUSEHOLDS))
+  const dots = Array.from({ length: TOTAL_HOUSEHOLDS }, (_, i) => i < reached)
 
   return (
     <section className="bg-story-day py-14 text-story-ink sm:py-24">
       <div ref={ref} className={`story-reveal mx-auto max-w-6xl px-4 ${visible ? 'is-visible' : ''}`}>
         <p className="font-heading text-sm uppercase tracking-[0.2em] text-story-river">06 / The next chapter</p>
-        <h2 className="mt-3 max-w-xl font-heading text-5xl">Ten households is a beginning.</h2>
+        <h2 className="mt-3 max-w-xl font-heading text-5xl">
+          {reached === 0
+            ? 'The next 500 households start here.'
+            : `${reached.toLocaleString('en-US')} household${reached === 1 ? '' : 's'} is a beginning.`}
+        </h2>
         <p className="mt-5 max-w-2xl text-lg text-story-ink/90">
-          Each dot is one household. The pilot has reached ten. The goal for the next phase is 500, along with about
-          15 schools and hospitals.
+          Each dot is one household.{' '}
+          {reached === 0 ? 'None reached yet.' : `The pilot has reached ${reached.toLocaleString('en-US')}.`} The
+          goal for the next phase is 500, along with about 15 schools and hospitals.
         </p>
 
         <div
@@ -26,13 +32,13 @@ export function GoalsSection() {
           style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(10px, 1fr))' }}
           aria-hidden="true"
         >
-          {DOTS.map((reached, i) => (
+          {dots.map((isReached, i) => (
             <span
               key={i}
               className={`aspect-square rounded-full transition-colors duration-300 ${
-                reached ? 'bg-story-leaf' : showGoal ? 'bg-story-leaf/25' : 'bg-story-ink/10'
+                isReached ? 'bg-story-leaf' : showGoal ? 'bg-story-leaf/25' : 'bg-story-ink/10'
               }`}
-              style={visible ? { transitionDelay: `${Math.min(i, REACHED) * 15}ms` } : undefined}
+              style={visible ? { transitionDelay: `${Math.min(i, reached) * 15}ms` } : undefined}
             />
           ))}
         </div>

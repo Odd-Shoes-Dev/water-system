@@ -10,14 +10,28 @@ import { RiverSection } from '@/components/landing/river-section'
 import { ScrollProgressBar } from '@/components/landing/scroll-progress-bar'
 import { TankSection } from '@/components/landing/tank-section'
 import { NavContent } from '@/components/nav-content'
+import { getDataStore } from '@/lib/data'
+import { getImpactSummary } from '@/lib/services/impact'
+import { getStreamsOverview } from '@/lib/services/streams'
 
 // The landing page's wording and section order follow
 // rain_and_renew_visual_landing_page.html, the prototype Cathy sent. Anything
 // that prototype itself flagged as needing her confirmation (donation
 // details, costs, the founder's own-words quote, contact details) is left
 // out rather than guessed at — see the plan this was built from.
+//
+// The pilot/goals figures below are computed live from the same data store
+// the dashboard writes to (see lib/services/impact.ts, lib/services/streams.ts),
+// not hardcoded — see docs/known-issues.md history for why that used to be
+// a gap.
 
-export default function HomePage() {
+export const dynamic = 'force-dynamic'
+
+export default async function HomePage() {
+  const store = getDataStore()
+  const [impact, overview] = await Promise.all([getImpactSummary(store), getStreamsOverview(store)])
+  const totalCapacityL = overview.tanks.reduce((sum, t) => sum + t.capacityLitres, 0)
+
   return (
     <div>
       <ScrollProgressBar />
@@ -67,9 +81,19 @@ export default function HomePage() {
       </div>
       <TankSection />
       <DaySliderSection />
-      <PilotStatsSection />
+      <PilotStatsSection
+        tanksInstalled={overview.tanks.length}
+        totalCapacityL={totalCapacityL}
+        peopleReached={impact.peopleReached}
+        householdsReached={impact.householdsReached}
+        rainwaterHarvestedL={impact.rainwaterHarvestedL}
+        greywaterRecycledL={impact.greywaterRecycledL}
+        youthTrained={overview.activityCounts.youthTrained}
+        peopleEmployed={impact.peopleEmployed}
+        volunteers={impact.volunteers}
+      />
       <RiverSection />
-      <GoalsSection />
+      <GoalsSection householdsReached={impact.householdsReached} />
       <FounderSection />
       <GetInvolvedSection />
 
